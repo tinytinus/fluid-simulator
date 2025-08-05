@@ -6,9 +6,8 @@
 
 typedef struct {
     // Velocity fields
-    Grid2D *u, *v;           // Current velocity
-    Grid2D *u_prev, *v_prev; // Previous velocity
-    
+   	VecGrid2D *velocity, *velocity_prev
+
     // Scalar fields
     Grid2D *density, *density_prev;
     Grid2D *pressure;

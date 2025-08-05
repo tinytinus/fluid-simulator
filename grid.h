@@ -2,6 +2,15 @@
 #ifndef GRID_H
 #define GRID_H
 
+/*
+   Grid2D 
+   a grid structure used to store a single float of data at each (x, y) position
+   useful for pressure 
+   data* - stores the floats with data
+   width - the width of the grid
+   height - the "height" of the grid (aka how many times the width)
+
+*/
 typedef struct {
     float *data;
     int width, height;
@@ -12,8 +21,8 @@ typedef struct {
    creates a grid
    @return Grid2D* - returns the created grid
    @param width - the width of the grid
-   @param height - the "height" of the grid (aka how many times the width)
-*/
+   @param height - the height of the grid
+   */
 Grid2D* grid_create(int width, int height) {
 	Grid2D* grid = malloc(sizeof(Grid2D));
 	grid->data = malloc(width * height * sizeof(float));
@@ -149,15 +158,39 @@ float grid_interpolate(Grid2D *grid, float x, float y) {
 		/*
 		   interpolate and blend the values
 		   simply put, take the percentage of how close it is and get the average based on those percentages 
-		   top - interpolated value of the top edge
-		   bottom - interpolated value from the bottom edge
-		   @return - the interpolated value from top and bottom
+		   @return - the interpolated value from the cube
 		*/
-		float top = lerp(tl, tr, fx);
-		float bottom = lerp(bl, br, fx);
-		return lerp(top, bottom, fy);
+		return bilinear_interpolate(tl, tr, bl, br, fx, fy);
 	 }
 }
+
+/*
+	VecGrid2D 
+	a grid stucture used to store Vec2's 
+	useful for velocity 
+	*data - stores the Vec2's containing the data
+	width - the width of the grid
+	height - the height of the grid 
+*/
+typedef struct {
+	Vec2 *data;
+	int width, height;
+} VecGrid2D;
+
+
+// VecGrid2D management
+VecGrid2D* vecgrid_create(int width, int height);
+void vecgrid_destroy(VecGrid2D *grid);
+void vecgrid_clear(VecGrid2D *grid);
+void vecgrid_copy(VecGrid2D *dest, VecGrid2D *src);
+
+// VecGrid2D access
+Vec2 vecgrid_get(VecGrid2D *grid, int x, int y);
+void vecgrid_set(VecGrid2D *grid, int x, int y, Vec2 value);
+
+// VecGrid2D utilities
+void vecgrid_add_source(VecGrid2D *grid, int x, int y, Vec2 amount);
+Vec2 vecgrid_interpolate(VecGrid2D *grid, float x, float y);
 
 #endif
 
