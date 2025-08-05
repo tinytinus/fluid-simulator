@@ -38,8 +38,19 @@ void grid_copy(Grid2D *dest, Grid2D *src) {
 }
 
 // Grid access (with bounds checking)
-float grid_get(Grid2D *grid, int x, int y);
-void grid_set(Grid2D *grid, int x, int y, float value);
+float grid_get(Grid2D *grid, int x, int y) {
+	if (grid && 0 <= x < grid->width && 0 <= y < grid->height) {
+		return grid->data[y * grid->width + x];
+	} else {
+		return 0.0f;
+	}
+}
+
+void grid_set(Grid2D *grid, int x, int y, float value) {
+	if (grid && 0 <= x < grid->width && 0 <= y < grid->height) {
+		grid->data[y * grid->width + x] = value;
+	}
+}
 
 // Utility functions
 void grid_add_source(Grid2D *grid, int x, int y, float amount);
