@@ -179,10 +179,41 @@ typedef struct {
 
 
 // VecGrid2D management
-VecGrid2D* vecgrid_create(int width, int height);
-void vecgrid_destroy(VecGrid2D *grid);
-void vecgrid_clear(VecGrid2D *grid);
-void vecgrid_copy(VecGrid2D *dest, VecGrid2D *src);
+VecGrid2D* vecgrid_create(int width, int height) {
+	VecGrid2D* grid = malloc(sizeof(VecGrid2D));
+	grid->data = malloc(width * height * sizeof(Vec2));
+	grid->width = width;
+	grid->height = height;
+
+	for (int i = 0; i < grid->height * grid->width; i++) {
+			grid->data[i] = {0.0f, 0.0f};
+	}
+
+	return grid;
+}
+
+void vecgrid_destroy(VecGrid2D *grid) {
+	if (grid) {
+		free(grid->data);
+		free(grid);
+	}
+}
+
+void vecgrid_clear(VecGrid2D *grid) {
+	if (grid) {
+		for (int i = 0; i < grid->height * grid->width; i++) {
+				grid->data[i] = {0.0f, 0.0f};
+		}	
+	}	
+}
+
+void vecgrid_copy(VecGrid2D *dest, VecGrid2D *src) {
+	if (dest->height == src->height && dest->width == src->width) {
+		for (int i = 0; i < src->width * src->height; i++) {
+			dest->data[i] = src->data[i];
+		}
+	} 
+}
 
 // VecGrid2D access
 Vec2 vecgrid_get(VecGrid2D *grid, int x, int y);
