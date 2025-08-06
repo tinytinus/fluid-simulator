@@ -4,6 +4,9 @@
 #include <ncurses.h>
 #include <signal.h>
 #include <unistd.h>
+#include <string.h>
+#include <math.h>
+#include <stdbool.h>
 
 #include "fluid.h"
 #include "renderer.h" 

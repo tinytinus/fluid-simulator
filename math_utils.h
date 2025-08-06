@@ -20,7 +20,7 @@ typedef struct {
    	@param y - value for the Vec2's y
 */
 Vec2 vec2_create(float x, float y) {
-	return {x,y};
+	return (Vec2){x,y};
 }
 
 /*
@@ -31,9 +31,7 @@ Vec2 vec2_create(float x, float y) {
    	@param b - Vec2 b to use
 */
 Vec2 vec2_add(Vec2 a, Vec2 b) {
-	if (a && b) {
-		return {a.x + b.x, a.y + b.y};
-	}
+	return (Vec2){a.x + b.x, a.y + b.y};
 }
 
 /*
@@ -44,9 +42,7 @@ Vec2 vec2_add(Vec2 a, Vec2 b) {
    	@param b - Vec2 b to use
 */
 Vec2 vec2_subtract(Vec2 a, Vec2 b){
-	if (a && b) {
-		return {a.x - b.x, a.y - b.y};
-	}
+	return (Vec2){a.x - b.x, a.y - b.y};
 }
 
 /*
@@ -57,9 +53,7 @@ Vec2 vec2_subtract(Vec2 a, Vec2 b){
 */
 
 Vec2 vec2_scale(Vec2 v, float scalar) {
-	if (v) {
-		return {v.x * scalar, v.y * scalar};
-	}
+	return (Vec2){v.x * scalar, v.y * scalar};
 }
 
 /*
@@ -70,9 +64,7 @@ Vec2 vec2_scale(Vec2 v, float scalar) {
 	@param v - the Vec2 to get the speed from
 */
 float vec2_length(Vec2 v) {
-	if (v) {
-		return sqrt(v.x * v.x + v.y * v.y);
-	}
+	return sqrt(v.x * v.x + v.y * v.y);
 }
 
 /*
@@ -82,13 +74,11 @@ float vec2_length(Vec2 v) {
    	@param v - the Vec2 to divide
 */
 Vec2 vec2_normalize(Vec2 v) {
-	if (v) {
-float len = vec2_length(v);
-		if (len != 0) {
-			return {v.x / len, v.y / len};
-		} else {
-			return {v.x, x.y};
-		}
+	float len = vec2_length(v);
+	if (len != 0) {
+		return (Vec2){v.x / len, v.y / len};
+	} else {
+		return (Vec2){v.x, v.y};
 	}
 }
 
@@ -174,7 +164,7 @@ Vec2 apply_velocity_boundary(Vec2 velocity, int x, int y, int width, int height)
 	}
 
 	if (y == 0 || y == height -1) {
-		result.y = 0.0f
+		result.y = 0.0f;
 	}
 	
 	return result;

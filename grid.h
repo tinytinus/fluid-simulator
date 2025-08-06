@@ -2,6 +2,8 @@
 #ifndef GRID_H
 #define GRID_H
 
+#include "math_utils.h"
+
 /*
    Grid2D 
    a grid structure used to store a single float of data at each (x, y) position
@@ -22,7 +24,7 @@ typedef struct {
    @return Grid2D* - returns the created grid
    @param width - the width of the grid
    @param height - the height of the grid
-   */
+*/
 Grid2D* grid_create(int width, int height) {
 	Grid2D* grid = malloc(sizeof(Grid2D));
 	grid->data = malloc(width * height * sizeof(float));
@@ -52,7 +54,7 @@ void grid_destroy(Grid2D *grid) {
 */
 void grid_clear(Grid2D *grid) {
 	if (grid) {
-		memset(grid->data, 0, width * height * sizeof(float));
+		memset(grid->data, 0, grid->width * grid->height * sizeof(float));
 	}
 }
 
@@ -163,65 +165,6 @@ float grid_interpolate(Grid2D *grid, float x, float y) {
 		return bilinear_interpolate(tl, tr, bl, br, fx, fy);
 	 }
 }
-
-/*
-	VecGrid2D 
-	a grid stucture used to store Vec2's 
-	useful for velocity 
-	*data - stores the Vec2's containing the data
-	width - the width of the grid
-	height - the height of the grid 
-*/
-typedef struct {
-	Vec2 *data;
-	int width, height;
-} VecGrid2D;
-
-
-// VecGrid2D management
-VecGrid2D* vecgrid_create(int width, int height) {
-	VecGrid2D* grid = malloc(sizeof(VecGrid2D));
-	grid->data = malloc(width * height * sizeof(Vec2));
-	grid->width = width;
-	grid->height = height;
-
-	for (int i = 0; i < grid->height * grid->width; i++) {
-			grid->data[i] = {0.0f, 0.0f};
-	}
-
-	return grid;
-}
-
-void vecgrid_destroy(VecGrid2D *grid) {
-	if (grid) {
-		free(grid->data);
-		free(grid);
-	}
-}
-
-void vecgrid_clear(VecGrid2D *grid) {
-	if (grid) {
-		for (int i = 0; i < grid->height * grid->width; i++) {
-				grid->data[i] = {0.0f, 0.0f};
-		}	
-	}	
-}
-
-void vecgrid_copy(VecGrid2D *dest, VecGrid2D *src) {
-	if (dest->height == src->height && dest->width == src->width) {
-		for (int i = 0; i < src->width * src->height; i++) {
-			dest->data[i] = src->data[i];
-		}
-	} 
-}
-
-// VecGrid2D access
-Vec2 vecgrid_get(VecGrid2D *grid, int x, int y);
-void vecgrid_set(VecGrid2D *grid, int x, int y, Vec2 value);
-
-// VecGrid2D utilities
-void vecgrid_add_source(VecGrid2D *grid, int x, int y, Vec2 amount);
-Vec2 vecgrid_interpolate(VecGrid2D *grid, float x, float y);
 
 #endif
 
