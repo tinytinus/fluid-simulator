@@ -21,6 +21,22 @@ typedef struct {
 } FluidSystem;
 
 // System management
+
+void fluid_destroy(FluidSystem *fluid) {
+    if (!fluid) return;
+   
+	if (fluid->velocity_x) grid_destroy(fluid->velocity_x);
+	if (fluid->velocity_prev_x) grid_destroy(fluid->velocity_prev_x);
+	if (fluid->velocity_y) grid_destroy(fluid->velocity_y);
+	if (fluid->velocity_prev_y) grid_destroy(fluid->velocity_prev_y);
+
+    if (fluid->pressure) grid_destroy(fluid->pressure);
+    if (fluid->density_prev) grid_destroy(fluid->density_prev);
+    if (fluid->density) grid_destroy(fluid->density);
+    
+    free(fluid);
+}
+
 FluidSystem* fluid_create(int width, int height) {
 	FluidSystem *fluid = malloc(sizeof(FluidSystem));
 	if (!fluid) return NULL;
@@ -46,21 +62,6 @@ FluidSystem* fluid_create(int width, int height) {
 	fluid->diffusion = DIFFUSION;
 
 	return fluid;
-}
-
-void fluid_destroy(FluidSystem *fluid) {
-    if (!fluid) return;
-   
-	if (fluid->velocity_x) grid_destroy(fluid->velocity_x);
-	if (fluid->velocity_prev_x) grid_destroy(fluid->velocity_prev_x);
-	if (fluid->velocity_y) grid_destroy(fluid->velocity_y);
-	if (fluid->velocity_prev_y) grid_destroy(fluid->velocity_prev_y);
-
-    if (fluid->pressure) grid_destroy(fluid->pressure);
-    if (fluid->density_prev) grid_destroy(fluid->density_prev);
-    if (fluid->density) grid_destroy(fluid->density);
-    
-    free(fluid);
 }
 
 void fluid_reset(FluidSystem *fluid) {
