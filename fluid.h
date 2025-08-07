@@ -44,6 +44,8 @@ FluidSystem* fluid_create(int width, int height) {
 	fluid->dt = TIME_STEP;
 	fluid->viscosity = VISCOSITY;
 	fluid->diffusion = DIFFUSION;
+
+	return fluid;
 }
 
 void fluid_destroy(FluidSystem *fluid) {
@@ -54,7 +56,6 @@ void fluid_destroy(FluidSystem *fluid) {
 	if (fluid->velocity_y) grid_destroy(fluid->velocity_y);
 	if (fluid->velocity_prev_y) grid_destroy(fluid->velocity_prev_y);
 
-    if (fluid->divergence) grid_destroy(fluid->divergence);
     if (fluid->pressure) grid_destroy(fluid->pressure);
     if (fluid->density_prev) grid_destroy(fluid->density_prev);
     if (fluid->density) grid_destroy(fluid->density);
@@ -62,13 +63,12 @@ void fluid_destroy(FluidSystem *fluid) {
     free(fluid);
 }
 
-void fluid_reset(FluidSystem *fluid {
+void fluid_reset(FluidSystem *fluid) {
 	grid_clear(fluid->velocity_x);
 	grid_clear(fluid->velocity_prev_x);
 	grid_clear(fluid->velocity_y);
 	grid_clear(fluid->velocity_prev_y);
 
-	grid_clear(fluid->divergence);
 	grid_clear(fluid->pressure);
 	grid_clear(fluid->density_prev);
 	grid_clear(fluid->density);

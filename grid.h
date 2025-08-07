@@ -77,7 +77,7 @@ void grid_copy(Grid2D *dest, Grid2D *src) {
    @param y - position on the y axis
 */
 float grid_get(Grid2D *grid, int x, int y) {
-	if (grid && 0 <= x < grid->width && 0 <= y < grid->height) {
+	if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->height) {
 		return grid->data[y * grid->width + x];
 	} else {
 		return 0.0f;
@@ -93,7 +93,7 @@ float grid_get(Grid2D *grid, int x, int y) {
    @param value - the value to set the position to
 */
 void grid_set(Grid2D *grid, int x, int y, float value) {
-	if (grid && 0 <= x < grid->width && 0 <= y < grid->height) {
+	if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->height) {
 		grid->data[y * grid->width + x] = value;
 	}
 }
@@ -107,7 +107,7 @@ void grid_set(Grid2D *grid, int x, int y, float value) {
    @param amount - the amount to increase the position by
 */
 void grid_add_source(Grid2D *grid, int x, int y, float amount) {
-	if (grid && 0 <= x < grid->width && 0 <= y < grid->height) {
+	if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->height) {
 		grid->data[y * grid->width + x] += amount;
 	}
 }
@@ -121,7 +121,7 @@ void grid_add_source(Grid2D *grid, int x, int y, float amount) {
    @param y - the float position of y
 */
 float grid_interpolate(Grid2D *grid, float x, float y) {
-	 if (grid && 0 <= x < grid->width && 0 <= y < grid->height) {
+	 if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->height) {
 		/*
 			get the corners around the float
 			x0 - left

@@ -139,7 +139,7 @@ float clamp(float value, float min, float max) {
 	@param height - the height to check
 */
 bool is_at_boundary(int x, int y, int width, int height) {
-	if (x > width || x < 0 || y > height || y < 0) {
+	if (x == 0 || x == width-1 || y == 0 || y == height-1) {
 		return true;
 	} else {
 		return false;
