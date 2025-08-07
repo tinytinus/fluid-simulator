@@ -20,8 +20,35 @@ typedef struct {
 } FluidSystem;
 
 // System management
-FluidSystem* fluid_create(int width, int height);
-void fluid_destroy(FluidSystem *fluid);
+FluidSystem* fluid_create(int width, int height, float dt, float viscosity, float diffusion) {
+	FluidSystem *fluid = malloc(sizeof(FluidSystem));
+	if (!fluid) return NULL;
+
+	fluid->width = width;
+	fluid->height = height;
+
+	fluid->velocity_x = grid_create(width, height);
+	fluid->velocity_prev_x = grid_create(width, height);
+	fluid->velocity_y = grid_create(width, height);
+	fluid->velocity_prev_y = grid_create(width, height);
+	fluid->density = grid_create(width, height);
+	fluid->density_prev = grid_create(width, height);
+	fluid->pressure = grid_create(width, height);
+
+	if (!fluid->velocity_x || !velocity_prev_x || !velocity_y || !velocity_prev_y || !density || !density_prev || !pressure) {
+		fluid_destroy(fluid);
+		return NULL;
+	}
+
+	fluid->dt = dt;
+	fluid->viscosity = viscosity;
+	fluid->diffusion = diffusion;
+}
+
+void fluid_destroy(FluidSystem *fluid) {
+
+}
+
 void fluid_reset(FluidSystem *fluid);
 
 // Main simulation step

@@ -6,12 +6,10 @@
 
 /*
    Grid2D 
-   a grid structure used to store a single float of data at each (x, y) position
-   useful for pressure 
+   a grid structure used to store a single float of data at each (x, y) position 
    data* - stores the floats with data
    width - the width of the grid
    height - the "height" of the grid (aka how many times the width)
-
 */
 typedef struct {
     float *data;
@@ -121,7 +119,6 @@ void grid_add_source(Grid2D *grid, int x, int y, float amount) {
    @param *grid - the grid to target
    @param x - the float position of x
    @param y - the float position of y
-
 */
 float grid_interpolate(Grid2D *grid, float x, float y) {
 	 if (grid && 0 <= x < grid->width && 0 <= y < grid->height) {
