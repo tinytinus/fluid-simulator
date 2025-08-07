@@ -3,6 +3,7 @@
 #define FLUID_H
 
 #include "grid.h"
+#include "config.h"
 
 typedef struct {
     // Velocity fields
@@ -35,7 +36,7 @@ FluidSystem* fluid_create(int width, int height) {
 	fluid->density_prev = grid_create(width, height);
 	fluid->pressure = grid_create(width, height);
 
-	if (!fluid->velocity_x || !velocity_prev_x || !velocity_y || !velocity_prev_y || !density || !density_prev || !pressure) {
+	if (!fluid->velocity_x || !fluid->velocity_prev_x || !fluid->velocity_y || !fluid->velocity_prev_y || !fluid->density || !fluid->density_prev || !fluid->pressure) {
 		fluid_destroy(fluid);
 		return NULL;
 	}
