@@ -80,7 +80,10 @@ void fluid_reset(FluidSystem *fluid) {
 void fluid_update(FluidSystem *fluid);
 
 // Force/source application
-void fluid_add_velocity(FluidSystem *fluid, int x, int y, float vx, float vy);
+void fluid_add_velocity(FluidSystem *fluid, int x, int y, float vx, float vy) {
+	
+}
+
 void fluid_add_density(FluidSystem *fluid, int x, int y, float amount);
 
 // Core solver functions (internal)
