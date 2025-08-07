@@ -20,7 +20,7 @@ typedef struct {
 } FluidSystem;
 
 // System management
-FluidSystem* fluid_create(int width, int height, float dt, float viscosity, float diffusion) {
+FluidSystem* fluid_create(int width, int height) {
 	FluidSystem *fluid = malloc(sizeof(FluidSystem));
 	if (!fluid) return NULL;
 
@@ -40,16 +40,39 @@ FluidSystem* fluid_create(int width, int height, float dt, float viscosity, floa
 		return NULL;
 	}
 
-	fluid->dt = dt;
-	fluid->viscosity = viscosity;
-	fluid->diffusion = diffusion;
+	fluid->dt = TIME_STEP;
+	fluid->viscosity = VISCOSITY;
+	fluid->diffusion = DIFFUSION;
 }
 
 void fluid_destroy(FluidSystem *fluid) {
+    if (!fluid) return;
+   
+	if (fluid->velocity_x) grid_destroy(fluid->velocity_x);
+	if (fluid->velocity_prev_x) grid_destroy(fluid->velocity_prev_x);
+	if (fluid->velocity_y) grid_destroy(fluid->velocity_y);
+	if (fluid->velocity_prev_y) grid_destroy(fluid->velocity_prev_y);
 
+    if (fluid->divergence) grid_destroy(fluid->divergence);
+    if (fluid->pressure) grid_destroy(fluid->pressure);
+    if (fluid->density_prev) grid_destroy(fluid->density_prev);
+    if (fluid->density) grid_destroy(fluid->density);
+    
+    free(fluid);
 }
 
-void fluid_reset(FluidSystem *fluid);
+void fluid_reset(FluidSystem *fluid {
+	grid_clear(fluid->velocity_x);
+	grid_clear(fluid->velocity_prev_x);
+	grid_clear(fluid->velocity_y);
+	grid_clear(fluid->velocity_prev_y);
+
+	grid_clear(fluid->divergence);
+	grid_clear(fluid->pressure);
+	grid_clear(fluid->density_prev);
+	grid_clear(fluid->density);
+
+}
 
 // Main simulation step
 void fluid_update(FluidSystem *fluid);
