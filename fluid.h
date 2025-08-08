@@ -5,6 +5,15 @@
 #include "grid.h"
 #include "config.h"
 
+/*
+	FluidSystem
+	the actual fluid itself 
+	@param velocity_x - the velocity of a position in the x direction
+	@param velocity_prev_x - the velocity of a position in the x direction a moment ago
+	@param velocity_y - the velocity of a position in the y direction
+	@param velocity_prev_y - the velocity of a position in the y direction a moment ago
+	
+*/
 typedef struct {
     // Velocity fields
    	Grid2D *velocity_x, *velocity_prev_x;
@@ -16,12 +25,16 @@ typedef struct {
     Grid2D *pressure;
     
     // Simulation parameters
-    float dt, viscosity, diffusion;
-    int width, height;
+    float delta_time, viscosity, diffusion;
+    int width, length;
 } FluidSystem;
 
-// System management
-
+/*
+	fluid_destroy
+	destroy a fluid
+	for the reason of ordering this needs to be infront of fluid_create
+	@param *fluid - the fluid to destroy
+*/
 void fluid_destroy(FluidSystem *fluid) {
     if (!fluid) return;
    
@@ -37,33 +50,45 @@ void fluid_destroy(FluidSystem *fluid) {
     free(fluid);
 }
 
-FluidSystem* fluid_create(int width, int height) {
+/*
+	fluid_create
+	creates a FluidSystem
+	@return FluidSystem* - returns the created fluidsystem
+	@param width - the width of the FluidSystem to create 
+	@param length - the length of the FluidSystem to create 
+*/
+FluidSystem* fluid_create(int width, int length) {
 	FluidSystem *fluid = malloc(sizeof(FluidSystem));
 	if (!fluid) return NULL;
 
 	fluid->width = width;
-	fluid->height = height;
+	fluid->length = length;
 
-	fluid->velocity_x = grid_create(width, height);
-	fluid->velocity_prev_x = grid_create(width, height);
-	fluid->velocity_y = grid_create(width, height);
-	fluid->velocity_prev_y = grid_create(width, height);
-	fluid->density = grid_create(width, height);
-	fluid->density_prev = grid_create(width, height);
-	fluid->pressure = grid_create(width, height);
+	fluid->velocity_x = grid_create(width, length);
+	fluid->velocity_prev_x = grid_create(width, length);
+	fluid->velocity_y = grid_create(width, length);
+	fluid->velocity_prev_y = grid_create(width, length);
+	fluid->density = grid_create(width, length);
+	fluid->density_prev = grid_create(width, length);
+	fluid->pressure = grid_create(width, length);
 
 	if (!fluid->velocity_x || !fluid->velocity_prev_x || !fluid->velocity_y || !fluid->velocity_prev_y || !fluid->density || !fluid->density_prev || !fluid->pressure) {
 		fluid_destroy(fluid);
 		return NULL;
 	}
 
-	fluid->dt = TIME_STEP;
+	fluid->delta_time = TIME_STEP;
 	fluid->viscosity = VISCOSITY;
 	fluid->diffusion = DIFFUSION;
 
 	return fluid;
 }
 
+/*
+	fluid_reset
+	resets a fluid to an empty state
+	@param *fluid - the FluidSystem to reset
+*/
 void fluid_reset(FluidSystem *fluid) {
 	grid_clear(fluid->velocity_x);
 	grid_clear(fluid->velocity_prev_x);
@@ -79,7 +104,15 @@ void fluid_reset(FluidSystem *fluid) {
 // Main simulation step
 void fluid_update(FluidSystem *fluid);
 
-// Force/source application
+/*
+	fluid_add_velocity
+	adds velocity to the fluid
+	@param *fluid - the FluidSystem to update the velocity in
+	@param x - the x position to update
+	@param y - the y position to update
+	@param vx - the velocity to add to the x axis
+	@param vy - the velocity to add to the y axis
+*/
 void fluid_add_velocity(FluidSystem *fluid, int x, int y, float vx, float vy) {
 	grid_add_source(fluid->velocity_x, x, y, vx);
 	grid_add_source(fluid->velocity_y, x, y, vy);
@@ -88,8 +121,8 @@ void fluid_add_velocity(FluidSystem *fluid, int x, int y, float vx, float vy) {
 void fluid_add_density(FluidSystem *fluid, int x, int y, float amount);
 
 // Core solver functions (internal)
-void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float dt);
-void diffuse(Grid2D *dest, Grid2D *src, float diff, float dt);
+void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time);
+void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time);
 void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div);
 
 #endif
