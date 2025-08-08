@@ -81,7 +81,8 @@ void fluid_update(FluidSystem *fluid);
 
 // Force/source application
 void fluid_add_velocity(FluidSystem *fluid, int x, int y, float vx, float vy) {
-	
+	grid_add_source(fluid->velocity_x, x, y, vx);
+	grid_add_source(fluid->velocity_y, x, y, vy);
 }
 
 void fluid_add_density(FluidSystem *fluid, int x, int y, float amount);
