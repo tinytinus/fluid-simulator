@@ -8,7 +8,6 @@
    	x - float x, doesnt have to be releated to the x axis
    	y - float y, doesnt have to be releated to the y axis
 */
-#include "grid.h"
 typedef struct {
     float x, y;
 } Vec2;
@@ -58,24 +57,24 @@ Vec2 vec2_scale(Vec2 v, float scalar) {
 }
 
 /*
-	vec2_length
+	vec2_height
 	calculates the speed of fluid regardless of direction
 	doesnt have to be about the speed but good example
 	@return float - the speed of the fluid
 	@param v - the Vec2 to get the speed from
 */
-float vec2_length(Vec2 v) {
+float vec2_height(Vec2 v) {
 	return sqrt(v.x * v.x + v.y * v.y);
 }
 
 /*
    	vec2_normalize
-   	divide by length with divide by 0 protection
-   	@return Vec2 - retruns the value of v divided by length
+   	divide by height with divide by 0 protection
+   	@return Vec2 - retruns the value of v divided by height
    	@param v - the Vec2 to divide
 */
 Vec2 vec2_normalize(Vec2 v) {
-	float len = vec2_length(v);
+	float len = vec2_height(v);
 	if (len != 0) {
 		return (Vec2){v.x / len, v.y / len};
 	} else {
@@ -169,26 +168,6 @@ Vec2 apply_velocity_boundary(Vec2 velocity, int x, int y, int width, int height)
 	}
 	
 	return result;
-}
-
-/*
-	laplacian
-	smooth out a cell depending on the values around it 
-	@return float - the new smoothed value for the cell
-	@param *grid - the grid to target
-	@param x - the x position to smooth out 
-	@param y - the y position to smooth out 
-*/
-float laplacian(Grid2D *grid, int x, int y) {
-	if (!grid) return 0.0f;
-	
-	float center = grid_get(grid, x, y);
-    float left = grid_get(grid, x-1, y);
-    float right = grid_get(grid, x+1, y);  
-    float up = grid_get(grid, x, y-1);
-    float down = grid_get(grid, x, y+1);
-
-	return (left + right  + up + down) - 4.0f * center; 
 }
 
 #endif

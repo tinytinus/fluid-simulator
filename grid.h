@@ -163,5 +163,25 @@ float grid_interpolate(Grid2D *grid, float x, float y) {
 	 }
 }
 
+/*
+	laplacian
+	smooth out a cell depending on the values around it 
+	@return float - the new smoothed value for the cell
+	@param *grid - the grid to target
+	@param x - the x position to smooth out 
+	@param y - the y position to smooth out 
+*/
+float laplacian(Grid2D *grid, int x, int y) {
+	if (!grid) return 0.0f;
+	
+	float center = grid_get(grid, x, y);
+    float left = grid_get(grid, x-1, y);
+    float right = grid_get(grid, x+1, y);  
+    float up = grid_get(grid, x, y-1);
+    float down = grid_get(grid, x, y+1);
+
+	return (left + right  + up + down) - 4.0f * center; 
+}
+
 #endif
 

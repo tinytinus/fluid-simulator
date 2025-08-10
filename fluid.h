@@ -163,8 +163,11 @@ void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time) {
 
 /*
 	diffuse
-	diffuses a grid using the gauss-seidel method 
-	(https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method)
+	diffuses a grid using the gauss-seidel method (see wikipedia for more information)
+	@param *dest - the destenation to write to 
+	@param *src - the source to start with
+	@param diff - the diffusion rate 
+	@param delta_time - the time since 
 */
 void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 	if (!dest || !src || diff <= 0.0f) return;
@@ -174,12 +177,17 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 	for (int iter = 0; iter < GAUSS_SIDEL_ITERATIONS; iter ++) {
 		for (int y = 0; y < src->height; y ++) {
 			for (int x = 0; x < src->width; x++) {
+				float lap = laplacian(dest, x, y);
+				float new_val = (grid_get(src, x, y) + diff * delta_time * laplacian(dest, x, y)) / (1.0f + 4.0f * diff * delta_time);
 
+				grid_set(dest, x, y, new_val);
 			}
 		}
 	}
 }
 
-void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div);
+void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
+
+}
 
 #endif
