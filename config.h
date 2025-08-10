@@ -11,7 +11,7 @@
 #define TIME_STEP 0.016f    // ~60 FPS
 #define VISCOSITY 0.1f
 #define DIFFUSION 0.0001f
-#define GAUSS_SIDEL_ITERATIONS 20 
+#define GAUSS_SEIDEL_ITERATION 20 
 
 // Rendering settings
 #define DENSITY_SCALE 10.0f

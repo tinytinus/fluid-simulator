@@ -174,7 +174,7 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 
 	grid_copy(dest, src);
 
-	for (int iter = 0; iter < GAUSS_SIDEL_ITERATIONS; iter ++) {
+	for (int iter = 0; iter < GAUSS_SEIDEL_ITERATION; iter ++) {
 		for (int y = 0; y < src->height; y ++) {
 			for (int x = 0; x < src->width; x++) {
 				float lap = laplacian(dest, x, y);
@@ -186,8 +186,49 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 	}
 }
 
+/*
+	project 
+	makes sure no new liquid appear or disappear using Poisson equation and the gauss-seidel method
+*/
 void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
+	if (!u || !v || !pressure || !div) return;
 
+	int width = u->width;
+	int height = u->height;
+
+	for (int y = 1; y < height -1; y++) {
+		for (int x = 1; x < width - 1; x++) {
+			float div_val = laplacian(u , x, y);
+			grid_set(div, x, y, div_val);
+		}
+	}
+
+	grid_clear(pressure);
+
+	for (int iter = 0; iter < GAUSS_SEIDEL_ITERATION; iter ++) {
+		for (int y = 1; y < height - 1; y++) {
+			for (int x = 1; x < width - 1; x++) {
+				float neighbours = laplacian(pressure, x, y);
+				float new_pressure = (neighbours - grid_get(div, x, y)) / 4.0f;
+
+				grid_set(pressure, x, y, new_pressure);
+			}
+		}
+	}
+
+
+	for (int y = 1; y < height - 1; y++) {
+		for (int x = 1; x < width - 1; x++) {
+			float grad_x = 0.5f * (grid_get(pressure, x + 1, y) - grid_get(pressure, x - 1, y));
+			float grad_y = 0.5f * (grid_get(pressure, x, y + 1) - grid_get(pressure, x, y - 1));
+
+			float new_u = grid_get(u, x, y) - grad_x;
+			float new_v = grid_get(v, x, y) - grad_y;
+
+			grid_set(u, x, y, new_u);
+			grid_set(v, x, y, new_v);
+		}
+	}
 }
 
 #endif
