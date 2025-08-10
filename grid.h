@@ -9,11 +9,11 @@
    a grid structure used to store a single float of data at each (x, y) position 
    data* - stores the floats with data
    width - the width of the grid
-   length - the "length" of the grid (aka how many times the width)
+   height - the "height" of the grid (aka how many times the width)
 */
 typedef struct {
     float *data;
-    int width, length;
+    int width, height;
 } Grid2D;
 
 /*
@@ -21,15 +21,15 @@ typedef struct {
    creates a grid
    @return Grid2D* - returns the created grid
    @param width - the width of the grid
-   @param length - the length of the grid
+   @param height - the height of the grid
 */
-Grid2D* grid_create(int width, int length) {
+Grid2D* grid_create(int width, int height) {
 	Grid2D* grid = malloc(sizeof(Grid2D));
-	grid->data = malloc(width * length * sizeof(float));
+	grid->data = malloc(width * height * sizeof(float));
 	grid->width = width;
-	grid->length = length;
+	grid->height = height;
 
-	memset(grid->data, 0, width * length * sizeof(float));
+	memset(grid->data, 0, width * height * sizeof(float));
 	return grid;	
 }
 
@@ -52,7 +52,7 @@ void grid_destroy(Grid2D *grid) {
 */
 void grid_clear(Grid2D *grid) {
 	if (grid) {
-		memset(grid->data, 0, grid->width * grid->length * sizeof(float));
+		memset(grid->data, 0, grid->width * grid->height * sizeof(float));
 	}
 }
 
@@ -63,8 +63,8 @@ void grid_clear(Grid2D *grid) {
    @param src - the source to copy from	
 */
 void grid_copy(Grid2D *dest, Grid2D *src) {
-	if (dest->length == src->length && dest->width == src->width) {
-		memcpy(dest->data, src->data, src->width * src->length * sizeof(float));
+	if (dest->height == src->height && dest->width == src->width) {
+		memcpy(dest->data, src->data, src->width * src->height * sizeof(float));
 	}
 }
 
@@ -77,7 +77,7 @@ void grid_copy(Grid2D *dest, Grid2D *src) {
    @param y - position on the y axis
 */
 float grid_get(Grid2D *grid, int x, int y) {
-	if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->length) {
+	if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->height) {
 		return grid->data[y * grid->width + x];
 	} else {
 		return 0.0f;
@@ -93,7 +93,7 @@ float grid_get(Grid2D *grid, int x, int y) {
    @param value - the value to set the position to
 */
 void grid_set(Grid2D *grid, int x, int y, float value) {
-	if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->length) {
+	if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->height) {
 		grid->data[y * grid->width + x] = value;
 	}
 }
@@ -107,7 +107,7 @@ void grid_set(Grid2D *grid, int x, int y, float value) {
    @param amount - the amount to increase the position by
 */
 void grid_add_source(Grid2D *grid, int x, int y, float amount) {
-	if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->length) {
+	if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->height) {
 		grid->data[y * grid->width + x] += amount;
 	}
 }
@@ -121,7 +121,7 @@ void grid_add_source(Grid2D *grid, int x, int y, float amount) {
    @param y - the float position of y
 */
 float grid_interpolate(Grid2D *grid, float x, float y) {
-	 if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->length) {
+	 if (grid &&  x >= 0 && x < grid->width &&  y >= 0 && y < grid->height) {
 		/*
 			get the corners around the float
 			x0 - left

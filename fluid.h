@@ -26,7 +26,7 @@ typedef struct {
     
     // Simulation parameters
     float delta_time, viscosity, diffusion;
-    int width, length;
+    int width, height;
 } FluidSystem;
 
 /*
@@ -55,22 +55,22 @@ void fluid_destroy(FluidSystem *fluid) {
 	creates a FluidSystem
 	@return FluidSystem* - returns the created fluidsystem
 	@param width - the width of the FluidSystem to create 
-	@param length - the length of the FluidSystem to create 
+	@param height - the height of the FluidSystem to create 
 */
-FluidSystem* fluid_create(int width, int length) {
+FluidSystem* fluid_create(int width, int height) {
 	FluidSystem *fluid = malloc(sizeof(FluidSystem));
 	if (!fluid) return NULL;
 
 	fluid->width = width;
-	fluid->length = length;
+	fluid->height = height;
 
-	fluid->velocity_x = grid_create(width, length);
-	fluid->velocity_prev_x = grid_create(width, length);
-	fluid->velocity_y = grid_create(width, length);
-	fluid->velocity_prev_y = grid_create(width, length);
-	fluid->density = grid_create(width, length);
-	fluid->density_prev = grid_create(width, length);
-	fluid->pressure = grid_create(width, length);
+	fluid->velocity_x = grid_create(width, height);
+	fluid->velocity_prev_x = grid_create(width, height);
+	fluid->velocity_y = grid_create(width, height);
+	fluid->velocity_prev_y = grid_create(width, height);
+	fluid->density = grid_create(width, height);
+	fluid->density_prev = grid_create(width, height);
+	fluid->pressure = grid_create(width, height);
 
 	if (!fluid->velocity_x || !fluid->velocity_prev_x || !fluid->velocity_y || !fluid->velocity_prev_y || !fluid->density || !fluid->density_prev || !fluid->pressure) {
 		fluid_destroy(fluid);
@@ -147,7 +147,7 @@ void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time) {
 	if (!dest || !src || !u || !v) return; 
 
 	for (int x = 0; x < src->width; x++) {
-		for (int y = 0; y < src->length; y++) {
+		for (int y = 0; y < src->height; y++) {
 			float velocity_x = grid_get(u, x, y);
 			float velocity_y = grid_get(v, x,y);
 
@@ -163,9 +163,21 @@ void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time) {
 
 /*
 	diffuse
+	diffuses a grid using the gauss-seidel method 
+	(https://en.wikipedia.org/wiki/Gauss%E2%80%93Seidel_method)
 */
 void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
+	if (!dest || !src || diff <= 0.0f) return;
 
+	grid_copy(dest, src);
+
+	for (int iter = 0; iter < GAUSS_SIDEL_ITERATIONS; iter ++) {
+		for (int y = 0; y < src->height; y ++) {
+			for (int x = 0; x < src->width; x++) {
+
+			}
+		}
+	}
 }
 
 void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div);
