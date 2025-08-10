@@ -114,15 +114,60 @@ void fluid_update(FluidSystem *fluid);
 	@param vy - the velocity to add to the y axis
 */
 void fluid_add_velocity(FluidSystem *fluid, int x, int y, float vx, float vy) {
+	if (!fluid) return;
+
 	grid_add_source(fluid->velocity_x, x, y, vx);
 	grid_add_source(fluid->velocity_y, x, y, vy);
 }
 
-void fluid_add_density(FluidSystem *fluid, int x, int y, float amount);
+/*
+	fluid_add_density
+	adds density to a fluid 
+	@param *fluid - the fluid to add the density to 
+	@param x - the position on the x axis
+	@param y - the position on the y axis
+	@param amount - how much to add 
+*/ 
+void fluid_add_density(FluidSystem *fluid, int x, int y, float amount) {
+	if (!fluid) return;
 
-// Core solver functions (internal)
-void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time);
-void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time);
+	grid_add_source(fluid->density ,x, y, amount);
+}
+
+/*
+	advect
+	calculates where a fluid at (x, y) came from delta_time seconds ago 
+	@param *dest - the destenation to set the new changes to 
+	@param *src - the source to look at 
+	@param *u - the grid with the velocity in the x axis
+	@param *v - thegrid with the velocity in the y axis 
+	@param delta_time - how long you have to look back
+*/
+void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time) {
+	if (!dest || !src || !u || !v) return; 
+
+	for (int x = 0; x < src->width; x++) {
+		for (int y = 0; y < src->length; y++) {
+			float velocity_x = grid_get(u, x, y);
+			float velocity_y = grid_get(v, x,y);
+
+			float prev_x = x - velocity_x * delta_time;
+			float prev_y = y - velocity_y * delta_time;
+
+			float value = grid_interpolate(src, prev_x, prev_y);
+
+			grid_set(dest, x, y, value);
+		}
+	}
+}
+
+/*
+	diffuse
+*/
+void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
+
+}
+
 void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div);
 
 #endif
