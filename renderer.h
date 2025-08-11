@@ -99,9 +99,9 @@ void draw_status(Renderer *renderer, const char *status) {
 	if (!renderer || !status) return;
 
 	if (renderer->use_colors) {
-		attron(color_pair(4));
+		attron(COLOR_PAIR(4));
 		mvprintw(0, 0,"%s", status);
-		attroff(color_pair(4));
+		attroff(COLOR_PAIR(4));
 	} else {
 		mvprintw(0, 0, "%s", status);
 	}
@@ -128,10 +128,10 @@ void renderer_draw_fluid(Renderer *renderer, FluidSystem *fluid) {
 
 			char ch = density_to_char(density);
 			if (renderer->use_colors) {
-				int color_pair = density_to_color(density);
-				attron(color_pair);
+				int COLOR_PAIR = density_to_color(density);
+				attron(COLOR_PAIR);
 				mvaddch(y, x, ch);
-				attroff(color_pair);
+				attroff(COLOR_PAIR);
 			} else {
 				mvaddch(y, x, ch);
 			}
