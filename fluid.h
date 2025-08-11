@@ -19,10 +19,10 @@ typedef struct {
    	Grid2D *velocity_x, *velocity_prev_x;
 	Grid2D *velocity_y, *velocity_prev_y;
 
-
     // Scalar fields
     Grid2D *density, *density_prev;
     Grid2D *pressure;
+	Grid2D *divergence;
     
     // Simulation parameters
     float delta_time, viscosity, diffusion;
@@ -46,7 +46,8 @@ void fluid_destroy(FluidSystem *fluid) {
     if (fluid->pressure) grid_destroy(fluid->pressure);
     if (fluid->density_prev) grid_destroy(fluid->density_prev);
     if (fluid->density) grid_destroy(fluid->density);
-    
+    if (fluid->divergence) grid_destroy(fluid->divergence);
+
     free(fluid);
 }
 
@@ -71,8 +72,9 @@ FluidSystem* fluid_create(int width, int height) {
 	fluid->density = grid_create(width, height);
 	fluid->density_prev = grid_create(width, height);
 	fluid->pressure = grid_create(width, height);
+	fluid->divergence = grid_create(width, height)
 
-	if (!fluid->velocity_x || !fluid->velocity_prev_x || !fluid->velocity_y || !fluid->velocity_prev_y || !fluid->density || !fluid->density_prev || !fluid->pressure) {
+	if (!fluid->velocity_x || !fluid->velocity_prev_x || !fluid->velocity_y || !fluid->velocity_prev_y || !fluid->density || !fluid->density_prev || !fluid->pressure || ! fluid->divergence) {
 		fluid_destroy(fluid);
 		return NULL;
 	}
@@ -98,11 +100,9 @@ void fluid_reset(FluidSystem *fluid) {
 	grid_clear(fluid->pressure);
 	grid_clear(fluid->density_prev);
 	grid_clear(fluid->density);
+	grid_clear(fluid->divergence);
 
 }
-
-// Main simulation step
-void fluid_update(FluidSystem *fluid);
 
 /*
 	fluid_add_velocity
@@ -189,6 +189,10 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 /*
 	project 
 	makes sure no new liquid appear or disappear using Poisson equation and the gauss-seidel method
+	@param *u - the grid with velocity in the x axis
+	@param *v - the grid with velocity in the y axis
+	@param *pressure - the grid contaning the pressure
+	@param *div - the divergence grid 
 */
 void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 	if (!u || !v || !pressure || !div) return;
@@ -229,6 +233,41 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(v, x, y, new_v);
 		}
 	}
+}
+
+/*
+	fluid_update
+	updates the fluid 
+	@param *fluid - the fluid to update 
+*/
+void fluid_update(FluidSystem *fluid) {
+	if (!fluid) return;
+
+	float delta_time = fluid->delta_time;
+	float visc = fluid->viscosity;
+	float diff = fluid->diffusion;
+
+	// velocity //
+	// simulate viscosity 
+	diffuse(fluid->velocity_prev_x, fluid->velocity_x, visc, delta_time);
+	diffuse(fluid->velocity_prev_y, fluid->velocity_y, visc, delta_time);
+
+	// project to make sure that it is incompressible
+	project(fluid->velocity_prev_x, fluid->velocity_prev_y, fluid->pressure, fluid->divergence);
+
+	//self advection
+	advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
+	advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
+
+	// cleanup any divergence
+	project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
+
+	// density //
+	// diffuse density 
+	diffuse(fluid->density_prev, fluid->density, diff, delta_time);
+
+	// advect density
+	advect(fluid->density, fluid->density_prev, fluid->velocity_x, fluid->velocity_y, delta_time);
 }
 
 #endif

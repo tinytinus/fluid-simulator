@@ -7,7 +7,7 @@
 /*
    Grid2D 
    a grid structure used to store a single float of data at each (x, y) position 
-   data* - stores the floats with data
+   *data - stores the floats with data
    width - the width of the grid
    height - the "height" of the grid (aka how many times the width)
 */
