@@ -4,7 +4,12 @@
 
 #include <ncurses.h>
 #include "fluid.h"
+#include "grid.h"
 
+/*
+	Renderer
+	stores data about the rendering
+*/
 typedef struct {
     int width, height;
     bool use_colors;
@@ -59,16 +64,23 @@ Renderer* renderer_create(int width, int height) {
 	return renderer;
 }
 
-// Main rendering functions
+/*
+	renderer_clear
+	clears the screen
+	@param renderer - the renderer to check if it exsists
+*/
 void renderer_clear(Renderer *renderer) {
-
+	if (!renderer) return;
+	clear();
 }
 
-void renderer_draw_fluid(Renderer *renderer, FluidSystem *fluid);
-void renderer_draw_velocity(Renderer *renderer, FluidSystem *fluid);
-void renderer_present(Renderer *renderer);
 
-// Utility functions
+/*
+	density_to_char
+	takes the density and returns a coresponding char
+	@return char - the char returned 
+	@param density - the density to get the coresponding char from
+*/
 char density_to_char(float density) {
 	if (density < 0.1f) return ' ';      
 	else if (density < 0.3f) return '.'; 
@@ -77,7 +89,64 @@ char density_to_char(float density) {
 	else return '@'; 
 }
 
-int density_to_color(float density);
-void draw_status(Renderer *renderer, const char *status);
+int density_to_color(float density) {
+	if (density < 0.2f) return 1;
+	if (density < 0.5f) return 2;
+	else return 3;
+}
+
+void draw_status(Renderer *renderer, const char *status) {
+	if (!renderer || !status) return;
+
+	if (renderer->use_colors) {
+		attron(color_pair(4));
+		mvprintw(0, 0,"%s", status);
+		attroff(color_pair(4));
+	} else {
+		mvprintw(0, 0, "%s", status);
+	}
+}
+
+
+/*
+	renderer_draw_fluid
+	draws the fluid to the screen
+	@param *renderer - the renderer to get drawing data from 
+	@param *fluid - the FluidSystem to draw 
+*/
+void renderer_draw_fluid(Renderer *renderer, FluidSystem *fluid) {
+	if (!renderer || !fluid) return;
+
+	for (int y = 0; y < renderer->height && y < fluid->height; y++) {
+		for (int x = 0; x < renderer->width && y < fluid->width; x++) {
+			float density = grid_get(fluid->density, x, y);
+
+			if (density < renderer->density_treshold) {
+				mvaddch(y, x, ' ');
+				continue;
+			}
+
+			char ch = density_to_char(density);
+			if (renderer->use_colors) {
+				int color_pair = density_to_color(density);
+				attron(color_pair);
+				mvaddch(y, x, ch);
+				attroff(color_pair);
+			} else {
+				mvaddch(y, x, ch);
+			}
+		}
+	}
+}
+
+/*
+	renderer_present
+	presents the rendered renderer
+	@param renderer - to ensure it exsists
+*/
+void renderer_present(Renderer *renderer) {
+	if (!renderer) return;
+	refresh();
+}
 
 #endif
