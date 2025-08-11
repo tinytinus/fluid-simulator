@@ -72,7 +72,7 @@ FluidSystem* fluid_create(int width, int height) {
 	fluid->density = grid_create(width, height);
 	fluid->density_prev = grid_create(width, height);
 	fluid->pressure = grid_create(width, height);
-	fluid->divergence = grid_create(width, height)
+	fluid->divergence = grid_create(width, height);
 
 	if (!fluid->velocity_x || !fluid->velocity_prev_x || !fluid->velocity_y || !fluid->velocity_prev_y || !fluid->density || !fluid->density_prev || !fluid->pressure || ! fluid->divergence) {
 		fluid_destroy(fluid);
