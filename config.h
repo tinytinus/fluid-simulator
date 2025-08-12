@@ -22,5 +22,8 @@
 #define COLOR_VELOCITY 2
 #define COLOR_OBSTACLE 3
 
+// input settings 
+#define FLUID_ADD 50.0f
+
 #endif
 

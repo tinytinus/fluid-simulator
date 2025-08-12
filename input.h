@@ -6,6 +6,15 @@
 #include "config.h"
 #include "fluid.h"
 
+/*
+	InputState
+	stores the current state of the input handeling 
+	@param mouse_x - the mouse x position
+	@param mouse_y - the mouse y position
+	@param mouse_pressed - checks if the mouse is pressed 
+	@param show_debug - stores wheter to show debug information 
+	@param paused - stores wheter the simulation is currently running or paused 
+*/
 typedef struct {
     int mouse_x, mouse_y;
     bool mouse_pressed;
@@ -13,7 +22,11 @@ typedef struct {
     bool paused;
 } InputState;
 
-// Input management
+/*
+	input_create
+	creates a InputState to store the state 
+	@return InputState* - returns the created InputState 
+*/
 InputState* input_create(void) {
 	InputState *input = malloc(sizeof(InputState));
 	if (!input) return NULL;
@@ -29,12 +42,26 @@ InputState* input_create(void) {
 	return input;
 }
 
+/*
+	input_destroy
+	destroys a InputState
+	@param *input - the inputstate to destroy 
+*/
 void input_destroy(InputState *input) {
 	if (!input) return ;
 
 	free(input);
 } 
 
+/*
+	screen_to_grid
+	maps screen positons to positions in the grid 
+	if everything goes well this should always map 1:1
+	@param screen_x - the position on the screen in the x axis
+	@param screen_y - the position on the screen in the y axis 
+	@param *grid_x - the position on the grid in the x axis
+	@param *grid_y - the position on the screen in the y axis 
+*/
 void screen_to_grid(int screen_x, int screen_y, int *grid_x, int *grid_y) {
 	if (grid_x) *grid_x = screen_x;
 	if (grid_y) *grid_y = screen_y;
@@ -46,7 +73,12 @@ void screen_to_grid(int screen_x, int screen_y, int *grid_x, int *grid_y) {
 	if (*grid_y >= GRID_HEIGHT) *grid_y = GRID_HEIGHT - 1;
 }
 
-// Specific input handlers
+/*
+	handle_mouse_input
+	handles the mouse inputs like cliking 
+	@param *input - the InputState to get the state from 
+	@param *fluid - the fluid to affect 
+*/
 void handle_mouse_input(InputState *input, FluidSystem *fluid) {
 	MEVENT event;
 
@@ -65,11 +97,18 @@ void handle_mouse_input(InputState *input, FluidSystem *fluid) {
 		} 
 
 		if (input->mouse_pressed) {
-			fluid_add_density(fluid, grid_x, grid_y, 50.0f /*remove this magic number*/);
+			fluid_add_density(fluid, grid_x, grid_y, FLUID_ADD);
 		}
 	}
 }
 
+/*
+	handle_keyboard_input
+	handles the keyboard input 
+	@param *input - the InputState to get the state from 
+	@param *fluid - the fluid to affect
+	@param  ch - the charchter that got inputted 
+*/
 void handle_keyboard_input(InputState *input, FluidSystem *fluid, int ch) {
 	switch (ch) {
 		case 'r':
@@ -88,12 +127,17 @@ void handle_keyboard_input(InputState *input, FluidSystem *fluid, int ch) {
 			break;
 
 		case ' ':
-			fluid_add_density(fluid, fluid->width / 2, fluid->height / 2, 100.0f /*this magic number should change*/); 
+			fluid_add_density(fluid, fluid->width / 2, fluid->height / 2, FLUID_ADD); 
 			break;
 	}
 }
 
-// Main input processing
+/*
+	input_handle
+	handles the input by sending it to the individual input handelers
+	@param *input - the InputState to get the state from and give 
+	@param *fluid - the fluid to affect 
+*/
 bool input_handle(InputState *input, FluidSystem *fluid) {
 	if (!input || !fluid) return false;
 
