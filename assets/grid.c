@@ -6,7 +6,14 @@
 
 Grid2D* grid_create(int width, int height) {
 	Grid2D* grid = (Grid2D*)malloc(sizeof(Grid2D));
+	if (!grid) return NULL;
+
 	grid->data = (float*)malloc(width * height * sizeof(float));
+	if (!grid->data) {
+		free(grid);
+		return NULL;
+	}
+
 	grid->width = width;
 	grid->height = height;
 
@@ -69,7 +76,9 @@ float grid_interpolate(Grid2D *grid, float x, float y) {
 		float br = grid_get(grid, x1, y1);
 
 		return bilinear_interpolate(tl, tr, bl, br, fx, fy);
-	 }
+	}
+
+	return 0.0f;
 }
 
 float laplacian(Grid2D *grid, int x, int y) {

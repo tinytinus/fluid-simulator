@@ -81,10 +81,10 @@ void renderer_draw_fluid(Renderer *renderer, FluidSystem *fluid) {
 
 			char ch = density_to_char(density);
 			if (renderer->use_colors) {
-				int COLOR_PAIR = density_to_color(density);
-				attron(COLOR_PAIR);
+				int color_pair = density_to_color(density);
+				attron(COLOR_PAIR(color_pair));
 				mvaddch(y, x, ch);
-				attroff(COLOR_PAIR);
+				attroff(COLOR_PAIR(color_pair));
 			} else {
 				mvaddch(y, x, ch);
 			}
