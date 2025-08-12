@@ -3,6 +3,7 @@
 #define MATH_UTILS_H
 
 #include <math.h>
+#include <stdbool.h>
 
 /*
 	Vec2 
@@ -21,9 +22,7 @@ typedef struct {
    	@param x - value for the Vec2's x
    	@param y - value for the Vec2's y
 */
-Vec2 vec2_create(float x, float y) {
-	return (Vec2){x,y};
-}
+Vec2 vec2_create(float x, float y);
 
 /*
    	vec2_add 
@@ -32,9 +31,7 @@ Vec2 vec2_create(float x, float y) {
    	@param a - Vec2 a to use
    	@param b - Vec2 b to use
 */
-Vec2 vec2_add(Vec2 a, Vec2 b) {
-	return (Vec2){a.x + b.x, a.y + b.y};
-}
+Vec2 vec2_add(Vec2 a, Vec2 b);
 
 /*
    	vec2_subtract
@@ -43,9 +40,7 @@ Vec2 vec2_add(Vec2 a, Vec2 b) {
    	@param a - Vec2 a to use
    	@param b - Vec2 b to use
 */
-Vec2 vec2_subtract(Vec2 a, Vec2 b){
-	return (Vec2){a.x - b.x, a.y - b.y};
-}
+Vec2 vec2_subtract(Vec2 a, Vec2 b);
 
 /*
     vec2_scale
@@ -53,10 +48,7 @@ Vec2 vec2_subtract(Vec2 a, Vec2 b){
 	@param v - the Vec2 to scale
 	@param scalar - how much to scale by
 */
-
-Vec2 vec2_scale(Vec2 v, float scalar) {
-	return (Vec2){v.x * scalar, v.y * scalar};
-}
+Vec2 vec2_scale(Vec2 v, float scalar);
 
 /*
 	vec2_height
@@ -65,9 +57,7 @@ Vec2 vec2_scale(Vec2 v, float scalar) {
 	@return float - the speed of the fluid
 	@param v - the Vec2 to get the speed from
 */
-float vec2_height(Vec2 v) {
-	return sqrt(v.x * v.x + v.y * v.y);
-}
+float vec2_height(Vec2 v);
 
 /*
    	vec2_normalize
@@ -75,14 +65,7 @@ float vec2_height(Vec2 v) {
    	@return Vec2 - retruns the value of v divided by height
    	@param v - the Vec2 to divide
 */
-Vec2 vec2_normalize(Vec2 v) {
-	float len = vec2_height(v);
-	if (len != 0) {
-		return (Vec2){v.x / len, v.y / len};
-	} else {
-		return (Vec2){v.x, v.y};
-	}
-}
+Vec2 vec2_normalize(Vec2 v);
 
 /*
    	lerp
@@ -92,9 +75,7 @@ Vec2 vec2_normalize(Vec2 v) {
    	@param b - the data b 
    	@param t - how much of a or b should be taken for the final value 
 */
-float lerp(float a, float b, float t) {
-	return (a + t * (b - a));
-}
+float lerp(float a, float b, float t);
 
 /*
    	bilinear_interpolate
@@ -107,11 +88,7 @@ float lerp(float a, float b, float t) {
    	@param tx - where the point is located on the x axis
    	@param ty - where the point is located on the y axis
 */
-float bilinear_interpolate(float tl, float tr, float bl, float br, float tx, float ty) {
-	float top = lerp(tl, tr, tx);
-	float bottom = lerp(bl, br, tx);
-	return lerp(bottom, top, ty);
-}
+float bilinear_interpolate(float tl, float tr, float bl, float br, float tx, float ty);
 
 /*
 	clamp
@@ -121,15 +98,7 @@ float bilinear_interpolate(float tl, float tr, float bl, float br, float tx, flo
 	@param min - the minimum value 
 	@param max - the maximum value
 */
-float clamp(float value, float min, float max) {
-	if (value > max) {
-		return max;
-	} else if (value < min) {
-		return min;
-	} else {
-		return value;
-	}
-}
+float clamp(float value, float min, float max);
 
 /*
 	is_at_boundary
@@ -140,13 +109,7 @@ float clamp(float value, float min, float max) {
 	@param width - the width to check 
 	@param height - the height to check
 */
-bool is_at_boundary(int x, int y, int width, int height) {
-	if (x == 0 || x == width-1 || y == 0 || y == height-1) {
-		return true;
-	} else {
-		return false;
-	}
-}
+bool is_at_boundary(int x, int y, int width, int height);
 
 /*
 	apply_velocity_boundary
@@ -158,19 +121,7 @@ bool is_at_boundary(int x, int y, int width, int height) {
 	@param width - the width of the field
 	@param height - the height of the field
 */
-Vec2 apply_velocity_boundary(Vec2 velocity, int x, int y, int width, int height) {
-	Vec2 result = velocity;
-
-	if (x == 0 || x == width -1) {
-		result.x = 0.0f;
-	}
-
-	if (y == 0 || y == height -1) {
-		result.y = 0.0f;
-	}
-	
-	return result;
-}
+Vec2 apply_velocity_boundary(Vec2 velocity, int x, int y, int width, int height);
 
 #endif
 
