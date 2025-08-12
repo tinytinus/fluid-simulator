@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <time.h>
 
 #include "assets/fluid.h"
 #include "assets/renderer.h" 
@@ -24,8 +25,11 @@ int main() {
     initscr();
     cbreak();
     noecho();
-    nodelay(stdscr, TRUE);
-    keypad(stdscr, TRUE);
+
+	timeout(0);
+    cbreak();
+
+	keypad(stdscr, TRUE);
     curs_set(0);
     
     // Initialize colors if supported
@@ -54,7 +58,7 @@ int main() {
         
 		// TODO: Frame rate limiting
         
-		usleep(16667); // ~60 FPS
+		sleep(1 / 60);
     }
     
     // Cleanup
