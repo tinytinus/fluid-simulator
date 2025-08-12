@@ -3,6 +3,9 @@
 #define RENDERER_H
 
 #include <ncurses.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "fluid.h"
 #include "grid.h"
 
@@ -49,7 +52,7 @@ void renderer_init_colors(Renderer *renderer) {
 	@param height - the height of the renderer to create 
 */ 
 Renderer* renderer_create(int width, int height) {
-	Renderer *renderer = malloc(sizeof(Renderer));
+	Renderer *renderer = (Renderer *)malloc(sizeof(Renderer));
 	if (!renderer) return NULL;
 
 	renderer->width = width;
@@ -118,7 +121,7 @@ void renderer_draw_fluid(Renderer *renderer, FluidSystem *fluid) {
 	if (!renderer || !fluid) return;
 
 	for (int y = 0; y < renderer->height && y < fluid->height; y++) {
-		for (int x = 0; x < renderer->width && y < fluid->width; x++) {
+		for (int x = 0; x < renderer->width && x < fluid->width; x++) {
 			float density = grid_get(fluid->density, x, y);
 
 			if (density < renderer->density_treshold) {

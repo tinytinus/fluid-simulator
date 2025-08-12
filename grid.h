@@ -4,6 +4,9 @@
 
 #include "math_utils.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 /*
    Grid2D 
    a grid structure used to store a single float of data at each (x, y) position 
@@ -24,8 +27,8 @@ typedef struct {
    @param height - the height of the grid
 */
 Grid2D* grid_create(int width, int height) {
-	Grid2D* grid = malloc(sizeof(Grid2D));
-	grid->data = malloc(width * height * sizeof(float));
+	Grid2D* grid = (Grid2D*)malloc(sizeof(Grid2D));
+	grid->data = (float*)malloc(width * height * sizeof(float));
 	grid->width = width;
 	grid->height = height;
 

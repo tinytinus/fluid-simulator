@@ -3,6 +3,9 @@
 #define INPUT_H
 
 #include <ncurses.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "config.h"
 #include "fluid.h"
 
@@ -28,7 +31,7 @@ typedef struct {
 	@return InputState* - returns the created InputState 
 */
 InputState* input_create(void) {
-	InputState *input = malloc(sizeof(InputState));
+	InputState *input = (InputState*)malloc(sizeof(InputState));
 	if (!input) return NULL;
 
 	input->mouse_x = 0;

@@ -2,6 +2,9 @@
 #ifndef FLUID_H
 #define FLUID_H
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "grid.h"
 #include "config.h"
 
@@ -59,7 +62,7 @@ void fluid_destroy(FluidSystem *fluid) {
 	@param height - the height of the FluidSystem to create 
 */
 FluidSystem* fluid_create(int width, int height) {
-	FluidSystem *fluid = malloc(sizeof(FluidSystem));
+	FluidSystem *fluid = (FluidSystem*)malloc(sizeof(FluidSystem));
 	if (!fluid) return NULL;
 
 	fluid->width = width;

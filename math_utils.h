@@ -2,6 +2,8 @@
 #ifndef MATH_UTILS_H
 #define MATH_UTILS_H
 
+#include <math.h>
+
 /*
 	Vec2 
 	used to store 2 floats of data 
