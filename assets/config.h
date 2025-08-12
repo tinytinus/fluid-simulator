@@ -8,11 +8,11 @@
 #define GRID_HEIGHT 24
 
 // Physics parameters
-#define TIME_STEP 0.016f    // ~60 FPS
+#define TIME_STEP 0.016f    // 0.016f = ~60 FPS
 #define VISCOSITY 0.01f
 #define DIFFUSION 0.001f
 #define GAUSS_SEIDEL_ITERATION 40 
-#define GRAVITY 1.2f
+#define GRAVITY 0.001f
 
 // Rendering settings
 #define DENSITY_SCALE 10.0f
@@ -24,7 +24,7 @@
 #define COLOR_OBSTACLE 3
 
 // input settings 
-#define FLUID_ADD 500.0f
+#define FLUID_ADD 50.0f
 
 #endif
 

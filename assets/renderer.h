@@ -8,6 +8,7 @@
 
 #include "fluid.h"
 #include "grid.h"
+#include "input.h"
 
 /*
 	Renderer
@@ -72,7 +73,8 @@ int density_to_color(float density);
 	@param *renderer - the renderer to draw the information on
 	@param *status - what actually to draw 
 */
-void draw_status(Renderer *renderer, const char *status);
+void draw_status(Renderer *renderer, FluidSystem *fluid, InputState *input);
+
 
 /*
 	renderer_draw_fluid

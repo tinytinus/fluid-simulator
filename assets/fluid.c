@@ -101,8 +101,7 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 	for (int iter = 0; iter < GAUSS_SEIDEL_ITERATION; iter ++) {
 		for (int y = 0; y < src->height; y ++) {
 			for (int x = 0; x < src->width; x++) {
-				float lap = laplacian(dest, x, y);
-				float new_val = (grid_get(src, x, y) + diff * delta_time * lap / (1.0f + 4.0f * diff * delta_time));
+				float new_val = (grid_get(src, x, y) + diff * delta_time * laplacian(dest, x, y)) / (1.0f + 4.0f * diff * delta_time);
 
 				grid_set(dest, x, y, new_val);
 			}
@@ -118,7 +117,7 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 
 	for (int y = 1; y < height -1; y++) {
 		for (int x = 1; x < width - 1; x++) {
-			float div_val = laplacian(u, x, y);
+			float div_val = 0.5f * ((grid_get(u, x+1, y) - grid_get(u, x-1, y)) + (grid_get(v, x, y+1) - grid_get(v, x, y-1)));
 			grid_set(div, x, y, div_val);
 		}
 	}
@@ -128,9 +127,8 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 	for (int iter = 0; iter < GAUSS_SEIDEL_ITERATION; iter ++) {
 		for (int y = 1; y < height - 1; y++) {
 			for (int x = 1; x < width - 1; x++) {
-				float neighbours = laplacian(pressure, x, y);
-				float new_pressure = (neighbours - grid_get(div, x, y)) / 4.0f;
-
+				float neighbors = grid_get(pressure, x-1, y) + grid_get(pressure, x+1, y) + grid_get(pressure, x, y-1) + grid_get(pressure, x, y+1);
+				float new_pressure = (neighbors - grid_get(div, x, y)) / 4.0f;
 				grid_set(pressure, x, y, new_pressure);
 			}
 		}

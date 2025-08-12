@@ -1,6 +1,9 @@
 #include "renderer.h"
+
 #include <stdlib.h>
 #include <string.h>
+
+#include "input.h"
 
 void renderer_destroy(Renderer *renderer) {
 	if (renderer) {
@@ -54,18 +57,38 @@ int density_to_color(float density) {
 	else return 3;
 }
 
-void draw_status(Renderer *renderer, const char *status) {
-	if (!renderer || !status) return;
+void draw_status(Renderer *renderer, FluidSystem *fluid, InputState *input) {
+    if (!renderer) return;
 
-	if (renderer->use_colors) {
-		attron(COLOR_PAIR(4));
-		mvprintw(0, 0,"%s", status);
-		attroff(COLOR_PAIR(4));
-	} else {
-		mvprintw(0, 0, "%s", status);
-	}
+    float total_density = 0;
+    float max_density = 0;
+    int fluid_cells = 0;
+    
+    for (int x = 0; x < fluid->width; x++) {
+        for (int y = 0; y < fluid->height; y++) {
+            float d = grid_get(fluid->density, x, y);
+            total_density += d;
+            if (d > 0.01f) fluid_cells++;
+            if (d > max_density) max_density = d;
+        }
+    }
+    
+    char status[256];
+    snprintf(status, sizeof(status), 
+        "Total: %.2f | Max: %.2f | Cells: %d | Mouse: (%d,%d) %s | %s | Press 'q' to quit", 
+        total_density, max_density, fluid_cells,
+        input->mouse_x, input->mouse_y, 
+        input->mouse_pressed ? "PRESSED" : "      ",
+        input->paused ? "PAUSED" : "RUNNING");
+    
+    if (renderer->use_colors) {
+        attron(COLOR_PAIR(4));
+        mvprintw(0, 0, "%s", status);
+        attroff(COLOR_PAIR(4));
+    } else {
+        mvprintw(0, 0, "%s", status);
+    }
 }
-
 
 void renderer_draw_fluid(Renderer *renderer, FluidSystem *fluid) {
 	if (!renderer || !fluid) return;
