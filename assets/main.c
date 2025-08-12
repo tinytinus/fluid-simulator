@@ -40,34 +40,32 @@ int main() {
     }
     
     // Initialize simulation components
-    // TODO: Initialize fluid system
-    // TODO: Initialize renderer
-    // TODO: Set initial conditions
+    FluidSystem *fluid = fluid_create(GRID_WIDTH, GRID_HEIGHT);
+    Renderer *render = renderer_create(GRID_WIDTH, GRID_HEIGHT);
+    InputState *input = input_create();
+
+	// TODO: Set initial conditions
     
     // Main simulation loop
     while (running) {
-        // TODO: Handle input
-        // TODO: Update physics
-        // TODO: Render frame
-        // TODO: Frame rate limiting
+    	if (!input_handle(input, fluid)) break;
+
+		if (!input->paused) fluid_update(fluid);
         
-        // Temporary message for testing
-        mvprintw(0, 0, "Fluid Simulator - Press 'q' to quit");
-        refresh();
+		renderer_clear(render);
+		renderer_draw_fluid(render, fluid);
+		renderer_present(render);
         
-        // Basic quit condition for now
-        int ch = getch();
-        if (ch == 'q' || ch == 'Q') {
-            running = false;
-        }
+		// TODO: Frame rate limiting
         
-        usleep(16667); // ~60 FPS
+		usleep(16667); // ~60 FPS
     }
     
     // Cleanup
-    // TODO: Free fluid system memory
-    // TODO: Cleanup renderer
-    
+	
+	fluid_destroy(fluid);
+    renderer_destroy(render);
+
     endwin();
     return 0;
 }
