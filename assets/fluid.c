@@ -102,7 +102,7 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 		for (int y = 0; y < src->height; y ++) {
 			for (int x = 0; x < src->width; x++) {
 				float lap = laplacian(dest, x, y);
-				float new_val = (grid_get(src, x, y) + diff * delta_time * laplacian(dest, x, y)) / (1.0f + 4.0f * diff * delta_time);
+				float new_val = (grid_get(src, x, y) + diff * delta_time * lap / (1.0f + 4.0f * diff * delta_time));
 
 				grid_set(dest, x, y, new_val);
 			}

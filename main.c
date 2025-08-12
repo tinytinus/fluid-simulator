@@ -3,10 +3,10 @@
 #include <unistd.h>
 #include <stdbool.h>
 
-#include "fluid.h"
-#include "renderer.h" 
-#include "input.h"
-#include "config.h"
+#include "assets/fluid.h"
+#include "assets/renderer.h" 
+#include "assets/input.h"
+#include "assets/config.h"
 
 // Global variables for cleanup
 static bool running = true;
