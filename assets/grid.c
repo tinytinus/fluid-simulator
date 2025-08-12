@@ -41,13 +41,17 @@ void grid_copy(Grid2D *dest, Grid2D *src) {
 }
 
 float grid_get(Grid2D *grid, int x, int y) {
-	if (!grid) return 0.0f;
-
-	float clamped_x = clamp(x, 0, grid->width);
-	float clamped_y = clamp(y, 0, grid->height);
-
-	int truncated_pos = (int)(clamped_y * grid->height + clamped_x);
-	return grid->data[truncated_pos];
+    if (!grid) return 0.0f;
+    
+    if (x < 0) x = -x;
+    if (x >= grid->width) x = 2 * (grid->width - 1) - x;
+    if (y < 0) y = -y;
+    if (y >= grid->height) y = 2 * (grid->height - 1) - y;
+    
+    x = (x < 0) ? 0 : (x >= grid->width) ? grid->width - 1 : x;
+    y = (y < 0) ? 0 : (y >= grid->height) ? grid->height - 1 : y;
+    
+    return grid->data[y * grid->width + x];
 }
 
 void grid_set(Grid2D *grid, int x, int y, float value) {
