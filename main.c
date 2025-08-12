@@ -2,7 +2,6 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdbool.h>
-#include <time.h>
 
 #include "assets/fluid.h"
 #include "assets/renderer.h" 

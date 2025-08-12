@@ -118,7 +118,7 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 
 	for (int y = 1; y < height -1; y++) {
 		for (int x = 1; x < width - 1; x++) {
-			float div_val = laplacian(u , x, y);
+			float div_val = laplacian(u, x, y);
 			grid_set(div, x, y, div_val);
 		}
 	}
@@ -134,6 +134,16 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 				grid_set(pressure, x, y, new_pressure);
 			}
 		}
+
+		for (int x = 0; x < width; x++){
+			grid_set(pressure, x, 0, grid_get(pressure, x, 1));
+			grid_set(pressure, x, height - 1, grid_get(pressure, x, height - 2));
+		}
+
+		for (int y = 0; y < height; y++) {
+            grid_set(pressure, 0, y, grid_get(pressure, 1, y));
+            grid_set(pressure, width-1, y, grid_get(pressure, width-2, y));
+        }
 	}
 
 
@@ -165,6 +175,13 @@ void fluid_update(FluidSystem *fluid) {
 
 	advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
 	advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
+
+	for (int y = 0; y < fluid->height; y++) {
+    	for (int x = 0; x < fluid->width; x++) {
+			float current_vy = grid_get(fluid->velocity_y, x, y);
+        	grid_set(fluid->velocity_y, x, y, current_vy + GRAVITY * delta_time) ;
+    	}
+	}
 
 	project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
 
