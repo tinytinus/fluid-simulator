@@ -16,6 +16,8 @@ InputState* input_create(void) {
 	input->mouse_pressed = false;
 	input->paused = false;
 	input->show_debug = false;
+	input->step_mode = false;
+	input->step_once = false;
 
 	mousemask(BUTTON1_PRESSED | BUTTON1_RELEASED | BUTTON1_CLICKED, NULL);
 
@@ -68,6 +70,19 @@ void handle_keyboard_input(InputState *input, FluidSystem *fluid, int ch) {
 		case 'R':
 			fluid_reset(fluid);
 			break;
+
+        case 's':
+        case 'S':
+            input->step_mode = !input->step_mode;
+            if (input->step_mode) input->paused = true;
+            break;
+
+        case 'n':
+        case 'N':
+            if (input->step_mode) {
+                input->step_once = true;
+            }
+            break;
 
 		case 'p':
 		case 'P':

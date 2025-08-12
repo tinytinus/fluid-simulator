@@ -75,11 +75,12 @@ void draw_status(Renderer *renderer, FluidSystem *fluid, InputState *input) {
     
     char status[256];
     snprintf(status, sizeof(status), 
-        "Total: %.2f | Max: %.2f | Cells: %d | Mouse: (%d,%d) %s | %s | Press 'q' to quit", 
+        "Total: %.2f | Max: %.2f | Cells: %d | Mouse: (%d,%d) %s | %s | 'S'=Step Mode:%s | 'N'=Next Step | 'P'=Pause Press 'q' to quit", 
         total_density, max_density, fluid_cells,
         input->mouse_x, input->mouse_y, 
         input->mouse_pressed ? "PRESSED" : "      ",
-        input->paused ? "PAUSED" : "RUNNING");
+        input->paused ? "PAUSED" : "RUNNING", 
+		input->step_mode ? "ON" : "OFF");
     
     if (renderer->use_colors) {
         attron(COLOR_PAIR(4));

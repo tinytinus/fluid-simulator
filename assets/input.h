@@ -23,6 +23,9 @@ typedef struct {
     bool mouse_pressed;
     bool show_debug;
     bool paused;
+
+	bool step_mode;
+	bool step_once;
 } InputState;
 
 /*

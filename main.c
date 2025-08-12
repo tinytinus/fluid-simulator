@@ -49,7 +49,12 @@ int main() {
     while (running) {
     	if (!input_handle(input, fluid)) break;
 
-		if (!input->paused) fluid_update(fluid);
+		bool should_update = !input->paused;
+		if (input->step_mode && input->step_once) {
+        	should_update = true;
+        	input->step_once = false;
+    	}
+		if (should_update) fluid_update(fluid);
         
 		renderer_clear(render);
 		renderer_draw_fluid(render, fluid);
