@@ -182,27 +182,27 @@ void apply_gravity(FluidSystem *fluid, float delta_time) {
 
 }
 
+
 void fluid_update(FluidSystem *fluid) {
-	if (!fluid) return;
+    if (!fluid) return;
 
-	float delta_time = fluid->delta_time;
-	float visc = fluid->viscosity;
-	float diff = fluid->diffusion;
+    float delta_time = fluid->delta_time;
+    float visc = fluid->viscosity;
+    float diff = fluid->diffusion;
 
-	diffuse(fluid->velocity_prev_x, fluid->velocity_x, visc, delta_time);
-	diffuse(fluid->velocity_prev_y, fluid->velocity_y, visc, delta_time);
+    diffuse(fluid->velocity_prev_x, fluid->velocity_x, visc, delta_time);
+    diffuse(fluid->velocity_prev_y, fluid->velocity_y, visc, delta_time);
 
-	project(fluid->velocity_prev_x, fluid->velocity_prev_y, fluid->pressure, fluid->divergence);
+    project(fluid->velocity_prev_x, fluid->velocity_prev_y, fluid->pressure, fluid->divergence);
 
-	advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
-	advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
+    advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
+    advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
 
-	apply_gravity(fluid, delta_time);
+    apply_gravity(fluid, delta_time);
 
-	project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
+    project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
 
-	diffuse(fluid->density_prev, fluid->density, diff, delta_time);
+    diffuse(fluid->density_prev, fluid->density, diff, delta_time);
 
-	advect(fluid->density, fluid->density_prev, fluid->velocity_x, fluid->velocity_y, delta_time);
+    advect(fluid->density, fluid->density_prev, fluid->velocity_x, fluid->velocity_y, delta_time);
 }
-

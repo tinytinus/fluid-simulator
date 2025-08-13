@@ -80,12 +80,38 @@ void draw_status(Renderer *renderer, FluidSystem *fluid, InputState *input) {
         input->paused ? "PAUSED" : "RUNNING", 
 		input->step_mode ? "ON" : "OFF");
     
-    if (renderer->use_colors) {
+	// density debugging
+	float density_total = 0, density_prev_total = 0;
+	float vel_x_total = 0, vel_y_total = 0;
+
+	for (int x = 0; x < fluid->width; x++) {
+		for (int y = 0; y < fluid->height; y++) {
+			density_total += grid_get(fluid->density, x, y);
+            density_prev_total += grid_get(fluid->density_prev, x, y);
+            vel_x_total += fabs(grid_get(fluid->velocity_x, x, y));
+            vel_y_total += fabs(grid_get(fluid->velocity_y, x, y));
+		}
+	}
+	
+	if (renderer->use_colors) {
         attron(COLOR_PAIR(4));
+
         mvprintw(0, 0, "%s", status);
+
+		mvprintw(2, 0, "Density:      %8.3f", density_total);
+   		mvprintw(3, 0, "Density Prev: %8.3f", density_prev_total);
+    	mvprintw(4, 0, "Vel X Total:  %8.3f", vel_x_total);
+    	mvprintw(5, 0, "Vel Y Total:  %8.3f", vel_y_total);
+
         attroff(COLOR_PAIR(4));
     } else {
         mvprintw(0, 0, "%s", status);
+			
+		mvprintw(2, 0, "Density:      %8.3f", density_total);
+    	mvprintw(3, 0, "Density Prev: %8.3f", density_prev_total);
+    	mvprintw(4, 0, "Vel X Total:  %8.3f", vel_x_total);
+    	mvprintw(5, 0, "Vel Y Total:  %8.3f", vel_y_total);
+
     }
 }
 
