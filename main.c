@@ -64,7 +64,6 @@ int main() {
         
 		// TODO: Frame rate limiting
 
-
 		sleep(1 / 60);
     }
     

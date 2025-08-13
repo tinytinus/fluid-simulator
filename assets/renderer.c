@@ -1,5 +1,6 @@
 #include "renderer.h"
 
+#include <ncurses.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -15,10 +16,11 @@ void renderer_destroy(Renderer *renderer) {
 void renderer_init_colors(Renderer *renderer) {
 	if (!renderer || !renderer->use_colors) return;
 
-	init_pair(1, COLOR_BLUE, COLOR_BLACK);   
-    init_pair(2, COLOR_CYAN, COLOR_BLACK);     
-    init_pair(3, COLOR_WHITE, COLOR_BLACK);  
-    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+	init_pair(1, COLOR_MAGENTA, COLOR_BLACK);   
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);     
+    init_pair(3, COLOR_CYAN, COLOR_BLACK);
+	init_pair(4, COLOR_WHITE, COLOR_BLACK);
+    init_pair(9, COLOR_YELLOW, COLOR_BLACK);
 }
 
 Renderer* renderer_create(int width, int height) {
@@ -52,9 +54,10 @@ char density_to_char(float density) {
 }
 
 int density_to_color(float density) {
-	if (density < 0.2f) return 1;
-	if (density < 0.5f) return 2;
-	else return 3;
+	if (density < 0.5f) return 1;
+	if (density < 2.0f) return 2;
+	if (density < 5.0f) return 3;
+	else return 4;
 }
 
 void draw_status(Renderer *renderer, FluidSystem *fluid, InputState *input) {
@@ -94,7 +97,7 @@ void draw_status(Renderer *renderer, FluidSystem *fluid, InputState *input) {
 	}
 	
 	if (renderer->use_colors) {
-        attron(COLOR_PAIR(4));
+        attron(COLOR_PAIR(9));
 
         mvprintw(0, 0, "%s", status);
 
@@ -103,7 +106,7 @@ void draw_status(Renderer *renderer, FluidSystem *fluid, InputState *input) {
     	mvprintw(4, 0, "Vel X Total:  %8.3f", vel_x_total);
     	mvprintw(5, 0, "Vel Y Total:  %8.3f", vel_y_total);
 
-        attroff(COLOR_PAIR(4));
+        attroff(COLOR_PAIR(9));
     } else {
         mvprintw(0, 0, "%s", status);
 			

@@ -18,13 +18,8 @@
 #define DENSITY_SCALE 10.0f
 #define VELOCITY_SCALE 5.0f
 
-// Color pairs (for ncurses)
-#define COLOR_FLUID 1
-#define COLOR_VELOCITY 2
-#define COLOR_OBSTACLE 3
-
 // input settings 
-#define FLUID_ADD 50.0f
+#define FLUID_ADD 5.0f
 
 #endif
 
