@@ -82,7 +82,7 @@ void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time) {
 	for (int x = 0; x < src->width; x++) {
 		for (int y = 0; y < src->height; y++) {
 			float velocity_x = grid_get(u, x, y);
-			float velocity_y = grid_get(v, x,y);
+			float velocity_y = grid_get(v, x, y);
 
 			float prev_x = x - velocity_x * delta_time;
             float prev_y = y - velocity_y * delta_time;

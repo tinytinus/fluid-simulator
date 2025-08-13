@@ -2,7 +2,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -std=c99
 LIBS = -lncurses -lm
 SRCDIR = assets
-SOURCES = main.c $(SRCDIR)/fluid.c $(SRCDIR)/grid.c $(SRCDIR)/input.c $(SRCDIR)/renderer.c $(SRCDIR)/math_utils.c 
+SOURCES = main.c $(SRCDIR)/fluid.c $(SRCDIR)/grid.c $(SRCDIR)/input.c $(SRCDIR)/renderer.c $(SRCDIR)/math_utils.c $(SRCDIR)/boundary.c 
 TARGET = fluid_sim
 
 $(TARGET): $(SOURCES)
