@@ -13,7 +13,8 @@ static bool running = true;
 
 // Signal handler for graceful shutdown
 void cleanup_handler(int sig) {
-    running = false;
+    (void)sig;
+	running = false;
 }
 
 int main() {

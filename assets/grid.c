@@ -42,7 +42,12 @@ void grid_copy(Grid2D *dest, Grid2D *src) {
 
 float grid_get(Grid2D *grid, int x, int y) {
     if (!grid) return 0.0f;
-    
+   
+    if (x < 0) x = 0;
+    if (x >= grid->width) x = grid->width - 1;
+    if (y < 0) y = 0; 
+    if (y >= grid->height) y = grid->height - 1;
+
     return grid->data[y * grid->width + x];
 }
 
@@ -82,11 +87,17 @@ float grid_interpolate(Grid2D *grid, float x, float y) {
 float laplacian(Grid2D *grid, int x, int y) {
 	if (!grid) return 0.0f;
 	
+	int left_x = (x > 0) ? x-1 : x;
+    int right_x = (x < grid->width-1) ? x+1 : x;
+    int up_y = (y > 0) ? y-1 : y;
+    int down_y = (y < grid->height-1) ? y+1 : y;
+    
+
 	float center = grid_get(grid, x, y);
-    float left = grid_get(grid, x-1, y);
-    float right = grid_get(grid, x+1, y);  
-    float up = grid_get(grid, x, y-1);
-    float down = grid_get(grid, x, y+1);
+    float left = grid_get(grid, left_x, y);
+    float right = grid_get(grid, right_x, y);
+    float up = grid_get(grid, x, up_y);
+    float down = grid_get(grid, x, down_y);
 
 	return (left + right  + up + down) - 4.0f * center; 
 }

@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <string.h>
+#include <math.h>
 
 #include "fluid.h"
 #include "grid.h"
@@ -118,8 +119,8 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 	int width = u->width;
 	int height = u->height;
 
-	for (int y = 0; y < height; y++) {
-		for (int x = 0; x < width; x++) {
+	for (int y = 1; y < height - 1; y++) {
+		for (int x = 1; x < width - 1; x++) {
 			float div_val = 0.5f * ((grid_get(u, x+1, y) - grid_get(u, x-1, y)) + (grid_get(v, x, y+1) - grid_get(v, x, y-1)));
 			grid_set(div, x, y, div_val);
 		}
