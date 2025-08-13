@@ -1,4 +1,5 @@
 #include "boundary.h"
+#include "grid.h"
 
 void apply_scalar_boundaries(Grid2D *grid) {
     if (!grid) return;
@@ -35,25 +36,4 @@ void apply_velocity_boundaries(Grid2D *u, Grid2D *v) {
 		grid_set(v, 0, y, grid_get(v, 1, y));
 		grid_set(v, width - 1, y, grid_get(v, width - 2, y));
 	}
-}
-
-float safe_grid_get(Grid2D *grid, int x, int y) {
-    if (!grid) return 0.0f;
-    
-    int width = grid->width;
-    int height = grid->height;
-    
-    if (x >= 0 && x < width && y >= 0 && y < height) {
-        return grid_get(grid, x, y);
-    }
-    
-	if (x < 0) x = -x;
-	if (x >= width ) x = 2 * (width - 1) - x;
-	if (y < 0) y = -y;
-	if (y >= height) y = 2 * (height - 1) - y;
-	
-	x = (x < 0) ? 0 : (x >= width) ? width - 1 : x;
-	y = (y < 0) ? 0 : (y >= height) ? height - 1 : y;
-	return grid_get(grid, x, y);
-            
 }

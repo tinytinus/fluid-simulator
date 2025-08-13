@@ -100,28 +100,5 @@ float bilinear_interpolate(float tl, float tr, float bl, float br, float tx, flo
 */
 float clamp(float value, float min, float max);
 
-/*
-	is_at_boundary
-	checks if this space is at the boundary of the screen
-	@return bool - true if it is at the edge of the screen, false otherwise
-	@param x - the x position to check
-	@param y - the y position to check
-	@param width - the width to check 
-	@param height - the height to check
-*/
-bool is_at_boundary(int x, int y, int width, int height);
-
-/*
-	apply_velocity_boundary
-	aplies the velocity changing at the edges \
-	@return Vec2 - returns the velocity field 
-	@param velocity - the velocity field to change 
-	@param x - the x position to look at
-	@param y - the y position to look at
-	@param width - the width of the field
-	@param height - the height of the field
-*/
-Vec2 apply_velocity_boundary(Vec2 velocity, int x, int y, int width, int height);
-
 #endif
 

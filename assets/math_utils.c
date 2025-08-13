@@ -55,24 +55,3 @@ float clamp(float value, float min, float max) {
 	}
 }
 
-bool is_at_boundary(int x, int y, int width, int height) {
-	if (x == 0 || x == width-1 || y == 0 || y == height-1) {
-		return true;
-	} else {
-		return false;
-	}
-}
-
-Vec2 apply_velocity_boundary(Vec2 velocity, int x, int y, int width, int height) {
-	Vec2 result = velocity;
-
-	if (x == 0 || x == width -1) {
-		result.x = 0.0f;
-	}
-
-	if (y == 0 || y == height -1) {
-		result.y = 0.0f;
-	}
-	
-	return result;
-}

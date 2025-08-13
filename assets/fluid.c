@@ -5,6 +5,8 @@
 #include "fluid.h"
 #include "grid.h"
 #include "config.h"
+#include "boundary.h"
+#include "math_utils.h"
 
 void fluid_destroy(FluidSystem *fluid) {
     if (!fluid) return;
@@ -192,17 +194,25 @@ void fluid_update(FluidSystem *fluid) {
 
     diffuse(fluid->velocity_prev_x, fluid->velocity_x, visc, delta_time);
     diffuse(fluid->velocity_prev_y, fluid->velocity_y, visc, delta_time);
+	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
 
     project(fluid->velocity_prev_x, fluid->velocity_prev_y, fluid->pressure, fluid->divergence);
+	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
 
     advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
     advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
-
-    apply_gravity(fluid, delta_time);
-
-    project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
+	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
+    
+	apply_gravity(fluid, delta_time);
+	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
+   
+	project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
+	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
 
     diffuse(fluid->density_prev, fluid->density, diff, delta_time);
+	apply_scalar_boundaries(fluid->density);
 
     advect(fluid->density, fluid->density_prev, fluid->velocity_x, fluid->velocity_y, delta_time);
+	apply_scalar_boundaries(fluid->density);	
+
 }

@@ -7,6 +7,7 @@
 
 #include "grid.h"
 #include "config.h"
+#include "boundary.h"
 
 /*
 	FluidSystem
