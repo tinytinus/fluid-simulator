@@ -25,10 +25,6 @@ int main() {
     initscr();
     cbreak();
     noecho();
-
-	timeout(0);
-    cbreak();
-
 	keypad(stdscr, TRUE);
     curs_set(0);
     
@@ -59,7 +55,11 @@ int main() {
         
 		renderer_clear(render);
 		renderer_draw_fluid(render, fluid);
-		draw_status(render, fluid, input);
+		
+		if (input->show_debug) {
+			draw_status(render, fluid, input);
+		}
+		
 		renderer_present(render);
         
 		// TODO: Frame rate limiting
