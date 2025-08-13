@@ -109,6 +109,14 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time);
 void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div);
 
 /*
+	apply_gravity
+	applies gravity to a fluidsystem 
+	@param *fluid - the fluidsystem to apply gravity to
+	@param delta_time - how much delta time has passed
+*/
+void apply_gravity(FluidSystem *fluid, float delta_time);
+
+/*
 	fluid_update
 	updates the fluid 
 	@param *fluid - the fluid to update 

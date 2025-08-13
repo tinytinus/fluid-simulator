@@ -19,8 +19,6 @@
 	@param paused - stores wheter the simulation is currently running or paused 
 */
 typedef struct {
-    int mouse_x, mouse_y;
-    bool mouse_pressed;
     bool show_debug;
     bool paused;
 
@@ -52,14 +50,6 @@ void input_destroy(InputState *input);
 	@param *grid_y - the position on the screen in the y axis 
 */
 void screen_to_grid(int screen_x, int screen_y, int *grid_x, int *grid_y);
-
-/*
-	handle_mouse_input
-	handles the mouse inputs like cliking 
-	@param *input - the InputState to get the state from 
-	@param *fluid - the fluid to affect 
-*/
-void handle_mouse_input(InputState *input, FluidSystem *fluid);
 
 /*
 	handle_keyboard_input

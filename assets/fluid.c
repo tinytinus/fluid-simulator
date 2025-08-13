@@ -84,7 +84,10 @@ void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time) {
 			float velocity_y = grid_get(v, x,y);
 
 			float prev_x = x - velocity_x * delta_time;
-			float prev_y = y - velocity_y * delta_time;
+            float prev_y = y - velocity_y * delta_time;
+            
+            prev_x = fmaxf(0.0f, fminf(prev_x, src->width - 1.001f));
+            prev_y = fmaxf(0.0f, fminf(prev_y, src->height - 1.001f));
 
 			float value = grid_interpolate(src, prev_x, prev_y);
 
@@ -115,8 +118,8 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 	int width = u->width;
 	int height = u->height;
 
-	for (int y = 1; y < height -1; y++) {
-		for (int x = 1; x < width - 1; x++) {
+	for (int y = 0; y < height; y++) {
+		for (int x = 0; x < width; x++) {
 			float div_val = 0.5f * ((grid_get(u, x+1, y) - grid_get(u, x-1, y)) + (grid_get(v, x, y+1) - grid_get(v, x, y-1)));
 			grid_set(div, x, y, div_val);
 		}
@@ -157,6 +160,25 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(v, x, y, new_v);
 		}
 	}
+
+	for (int x = 0; x < width; x++) {
+    	grid_set(u, x, 0, -grid_get(u, x, 1));
+    	grid_set(u, x, height-1, -grid_get(u, x, height-2));
+	}
+	for (int y = 0; y < height; y++) {
+    	grid_set(v, 0, y, -grid_get(v, 1, y));
+    	grid_set(v, width-1, y, -grid_get(v, width-2, y));
+	}
+}
+
+void apply_gravity(FluidSystem *fluid, float delta_time) {
+	for (int y = 0; y < fluid->height; y++) {
+    	for (int x = 0; x < fluid->width; x++) {
+			float current_vy = grid_get(fluid->velocity_y, x, y);
+        	grid_set(fluid->velocity_y, x, y, current_vy + GRAVITY * delta_time) ;
+    	}
+	}
+
 }
 
 void fluid_update(FluidSystem *fluid) {
@@ -174,12 +196,7 @@ void fluid_update(FluidSystem *fluid) {
 	advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
 	advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
 
-	for (int y = 0; y < fluid->height; y++) {
-    	for (int x = 0; x < fluid->width; x++) {
-			float current_vy = grid_get(fluid->velocity_y, x, y);
-        	grid_set(fluid->velocity_y, x, y, current_vy + GRAVITY * delta_time) ;
-    	}
-	}
+	apply_gravity(fluid, delta_time);
 
 	project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
 

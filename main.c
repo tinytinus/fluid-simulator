@@ -58,11 +58,11 @@ int main() {
         
 		renderer_clear(render);
 		renderer_draw_fluid(render, fluid);
+		draw_status(render, fluid, input);
 		renderer_present(render);
         
 		// TODO: Frame rate limiting
 
-		draw_status(render, fluid, input);
 
 		sleep(1 / 60);
     }

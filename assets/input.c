@@ -11,15 +11,11 @@ InputState* input_create(void) {
 	InputState *input = (InputState*)malloc(sizeof(InputState));
 	if (!input) return NULL;
 
-	input->mouse_x = 0;
-	input->mouse_y = 0;
-	input->mouse_pressed = false;
 	input->paused = false;
 	input->show_debug = false;
 	input->step_mode = false;
 	input->step_once = false;
 
-	mousemask(BUTTON1_PRESSED | BUTTON1_RELEASED | BUTTON1_CLICKED, NULL);
 
 	return input;
 }
@@ -39,29 +35,6 @@ void screen_to_grid(int screen_x, int screen_y, int *grid_x, int *grid_y) {
 
 	if (*grid_y < 0) *grid_y = 0;
 	if (*grid_y >= GRID_HEIGHT) *grid_y = GRID_HEIGHT - 1;
-}
-
-void handle_mouse_input(InputState *input, FluidSystem *fluid) {
-	MEVENT event;
-
-	if (getmouse(&event) == OK) {
-		int grid_x, grid_y;
-		screen_to_grid(event.x, event.y, &grid_x, &grid_y);
-
-		input->mouse_x = grid_x;
-		input->mouse_y = grid_y;
-
-		if (event.bstate & BUTTON1_PRESSED) {
-			input->mouse_pressed = true;
-		}
-		if (event.bstate & BUTTON1_RELEASED) {
-			input->mouse_pressed = false;
-		} 
-
-		if (input->mouse_pressed) {
-			fluid_add_density(fluid, grid_x, grid_y, FLUID_ADD);
-		}
-	}
 }
 
 void handle_keyboard_input(InputState *input, FluidSystem *fluid, int ch) {
@@ -112,8 +85,6 @@ bool input_handle(InputState *input, FluidSystem *fluid) {
 			return false;
 		}
 	}
-
-	handle_mouse_input(input, fluid);
 
 	return true;
 }
