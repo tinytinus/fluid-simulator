@@ -12,7 +12,7 @@
 #define VISCOSITY 0.01f
 #define DIFFUSION 0.001f
 #define GAUSS_SEIDEL_ITERATION 40 
-#define GRAVITY 0.001f
+#define GRAVITY 0.0001f
 
 // Rendering settings
 #define DENSITY_SCALE 10.0f
