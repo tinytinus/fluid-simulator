@@ -1,8 +1,6 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include <stdbool.h>
-
 // Grid dimensions
 #define GRID_WIDTH 80
 #define GRID_HEIGHT 24

@@ -78,7 +78,9 @@ void fluid_add_density(FluidSystem *fluid, int x, int y, float amount) {
 }
 
 void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time, int b) {
-	if (!dest || !src || !u || !v) return; 
+	if (!dest || !src || !u || !v) return;
+
+	grid_clear(dest);
 
 	for (int x = 0; x < src->width; x++) {
 		for (int y = 0; y < src->height; y++) {
@@ -187,8 +189,11 @@ void apply_gravity(FluidSystem *fluid, float delta_time) {
 
 	for (int y = 0; y < fluid->height; y++) {
     	for (int x = 0; x < fluid->width; x++) {
+			if (grid_get(fluid->density, x, y) < 0.001f) return;
+
 			float current_vy = grid_get(fluid->velocity_y, x, y);
-        	grid_set(fluid->velocity_y, x, y, current_vy - GRAVITY * delta_time) ;
+        	grid_set(fluid->velocity_y, x, y, current_vy + GRAVITY * delta_time);
+			set_boundary(1, NULL, fluid->velocity_x, fluid->velocity_y);
     	}
 	}
 

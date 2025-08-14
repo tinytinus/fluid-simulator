@@ -4,16 +4,17 @@
 void apply_scalar_boundaries(Grid2D *grid) {
     if (!grid) return;
     
-    int w = grid->width;
-    int h = grid->height;
+    int width = grid->width;
+    int height = grid->height;
     
-	for (int x = 0; x < w; x++) {
-		grid_set(grid, x, 0, grid_get(grid, x, 1));
-		grid_set(grid, x, h-1, grid_get(grid, x, h-2));
+	for (int x = 0; x < width; x++) {
+		grid_add_source(grid, x, 1, grid_get(grid, x, 0));
+		grid_add_source(grid, x, height - 1, grid_get(grid, x, height - 2));
 	}
-	for (int y = 0; y < h; y++) {
-		grid_set(grid, 0, y, grid_get(grid, 1, y));
-		grid_set(grid, w-1, y, grid_get(grid, w-2, y));
+	for (int y = 0; y < height; y++) {
+		grid_add_source(grid, 1, y, grid_get(grid, 0, y));
+		grid_add_source(grid, width - 1, y, grid_get(grid, width - 2, y));
+		// the fluid needs to be removed from where it came from so that it doesnt double
 	}
             
 }
