@@ -86,8 +86,9 @@ void fluid_add_density(FluidSystem *fluid, int x, int y, float amount);
 	@param *u - the grid with the velocity in the x axis
 	@param *v - thegrid with the velocity in the y axis 
 	@param delta_time - how long you have to look back
+	@param b - the type of boundary to apply 
 */
-void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time);
+void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time, int b);
 
 /*
 	diffuse

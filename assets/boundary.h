@@ -18,4 +18,14 @@ void apply_scalar_boundaries(Grid2D *grid);
 */
 void apply_velocity_boundaries(Grid2D *u, Grid2D *v);
 
+/*
+	set_boundary
+	calls the correct function for the type of boundary
+	@param b - the boundary type, 0 for scalar, 1 for velocity
+	@param *scalar - the scalar grid to target
+	@param *u - the x velocity grid to target
+	@param *v - the y velocity grid to target
+*/
+void set_boundary(int b, Grid2D *scalar, Grid2D *u, Grid2D *v);
+
 #endif

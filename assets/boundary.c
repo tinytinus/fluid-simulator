@@ -37,3 +37,13 @@ void apply_velocity_boundaries(Grid2D *u, Grid2D *v) {
 		grid_set(v, width - 1, y, grid_get(v, width - 2, y));
 	}
 }
+
+void set_boundary(int b, Grid2D *scalar, Grid2D *u, Grid2D *v ) {
+	if (!scalar || !u || !v) return;
+
+	if (b == 0) {
+		apply_scalar_boundaries(scalar);
+	} else if (b == 1) {
+		apply_velocity_boundaries(u, v);
+	}
+}

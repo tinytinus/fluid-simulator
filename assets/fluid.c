@@ -77,7 +77,7 @@ void fluid_add_density(FluidSystem *fluid, int x, int y, float amount) {
 	grid_add_source(fluid->density ,x, y, amount);
 }
 
-void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time) {
+void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time, int b) {
 	if (!dest || !src || !u || !v) return; 
 
 	for (int x = 0; x < src->width; x++) {
@@ -94,6 +94,7 @@ void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time) {
 			float value = grid_interpolate(src, prev_x, prev_y);
 
 			grid_set(dest, x, y, value);
+			set_boundary(b, dest, u, v);
 		}
 	}
 }
@@ -104,8 +105,8 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 	grid_copy(dest, src);
 
 	for (int iter = 0; iter < GAUSS_SEIDEL_ITERATION; iter ++) {
-		for (int y = 0; y < src->height; y ++) {
-			for (int x = 0; x < src->width; x++) {
+		for (int y = 1; y < src->height - 1; y ++) {
+			for (int x = 1; x < src->width - 1; x++) {
 				float new_val = (grid_get(src, x, y) + diff * delta_time * laplacian(dest, x, y)) / (1.0f + 4.0f * diff * delta_time);
 
 				grid_set(dest, x, y, new_val);
@@ -126,8 +127,8 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(div, x, y, div_val);
 		}
 	}
-	apply_scalar_boundaries(div);
-	
+	set_boundary(0, div, u, v);
+
 	grid_clear(pressure);
 
 	for (int iter = 0; iter < GAUSS_SEIDEL_ITERATION; iter ++) {
@@ -138,7 +139,7 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 				grid_set(pressure, x, y, new_pressure);
 			}
 		}
-		apply_scalar_boundaries(pressure);
+		set_boundary(0, pressure, u, v);
 	}
 
 
@@ -154,10 +155,12 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(v, x, y, new_v);
 		}
 	}
-	apply_velocity_boundaries(u, v);
+	set_boundary(1, pressure, u, v);
 }
 
 void apply_gravity(FluidSystem *fluid, float delta_time) {
+	if (!fluid) return;
+
 	for (int y = 0; y < fluid->height; y++) {
     	for (int x = 0; x < fluid->width; x++) {
 			float current_vy = grid_get(fluid->velocity_y, x, y);
@@ -177,23 +180,17 @@ void fluid_update(FluidSystem *fluid) {
 
     diffuse(fluid->velocity_prev_x, fluid->velocity_x, visc, delta_time);
     diffuse(fluid->velocity_prev_y, fluid->velocity_y, visc, delta_time);
-	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
 
     project(fluid->velocity_prev_x, fluid->velocity_prev_y, fluid->pressure, fluid->divergence);
 
-    advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
-    advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
-	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
+    advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time, 1);
+    advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time, 1);
     
 	apply_gravity(fluid, delta_time);
-	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
    
 	project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
 
     diffuse(fluid->density_prev, fluid->density, diff, delta_time);
-	apply_scalar_boundaries(fluid->density);
 
-    advect(fluid->density, fluid->density_prev, fluid->velocity_x, fluid->velocity_y, delta_time);
-	apply_scalar_boundaries(fluid->density);	
-
+    advect(fluid->density, fluid->density_prev, fluid->velocity_x, fluid->velocity_y, delta_time, 0);
 }
