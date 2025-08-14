@@ -47,8 +47,8 @@ float grid_get(Grid2D *grid, int x, int y) {
     int height = grid->height;
     
     if (x >= 0 && x < width && y >= 0 && y < height) {
-        return grid_get(grid, x, y);
-    }
+    	return grid->data[y * grid->width + x];
+	}
     
 	if (x < 0) x = -x;
 	if (x >= width ) x = 2 * (width - 1) - x;
