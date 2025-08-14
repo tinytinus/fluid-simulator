@@ -6,7 +6,6 @@
 #include "grid.h"
 #include "config.h"
 #include "boundary.h"
-#include "math_utils.h"
 
 void fluid_destroy(FluidSystem *fluid) {
     if (!fluid) return;
@@ -127,7 +126,8 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(div, x, y, div_val);
 		}
 	}
-
+	apply_scalar_boundaries(div);
+	
 	grid_clear(pressure);
 
 	for (int iter = 0; iter < GAUSS_SEIDEL_ITERATION; iter ++) {
@@ -138,16 +138,7 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 				grid_set(pressure, x, y, new_pressure);
 			}
 		}
-
-		for (int x = 0; x < width; x++){
-			grid_set(pressure, x, 0, grid_get(pressure, x, 1));
-			grid_set(pressure, x, height - 1, grid_get(pressure, x, height - 2));
-		}
-
-		for (int y = 0; y < height; y++) {
-            grid_set(pressure, 0, y, grid_get(pressure, 1, y));
-            grid_set(pressure, width-1, y, grid_get(pressure, width-2, y));
-        }
+		apply_scalar_boundaries(pressure);
 	}
 
 
@@ -163,15 +154,7 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(v, x, y, new_v);
 		}
 	}
-
-	for (int x = 0; x < width; x++) {
-    	grid_set(u, x, 0, -grid_get(u, x, 1));
-    	grid_set(u, x, height-1, -grid_get(u, x, height-2));
-	}
-	for (int y = 0; y < height; y++) {
-    	grid_set(v, 0, y, -grid_get(v, 1, y));
-    	grid_set(v, width-1, y, -grid_get(v, width-2, y));
-	}
+	apply_velocity_boundaries(u, v);
 }
 
 void apply_gravity(FluidSystem *fluid, float delta_time) {
@@ -197,7 +180,6 @@ void fluid_update(FluidSystem *fluid) {
 	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
 
     project(fluid->velocity_prev_x, fluid->velocity_prev_y, fluid->pressure, fluid->divergence);
-	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
 
     advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
     advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
@@ -207,7 +189,6 @@ void fluid_update(FluidSystem *fluid) {
 	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
    
 	project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
-	apply_velocity_boundaries(fluid->velocity_x, fluid->velocity_y);
 
     diffuse(fluid->density_prev, fluid->density, diff, delta_time);
 	apply_scalar_boundaries(fluid->density);
