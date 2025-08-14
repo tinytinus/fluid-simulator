@@ -38,6 +38,8 @@ void screen_to_grid(int screen_x, int screen_y, int *grid_x, int *grid_y) {
 }
 
 void handle_keyboard_input(InputState *input, FluidSystem *fluid, int ch) {
+	if (!input || !fluid) return;
+
 	switch (ch) {
 		case 'r':
 		case 'R':
