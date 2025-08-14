@@ -5,7 +5,6 @@
 #include "fluid.h"
 #include "grid.h"
 #include "config.h"
-#include "boundary.h"
 
 void fluid_destroy(FluidSystem *fluid) {
     if (!fluid) return;
@@ -77,7 +76,7 @@ void fluid_add_density(FluidSystem *fluid, int x, int y, float amount) {
 	grid_add_source(fluid->density ,x, y, amount);
 }
 
-void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time, int b) {
+void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time) {
 	if (!dest || !src || !u || !v) return;
 
 	grid_clear(dest);
@@ -98,9 +97,6 @@ void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time, i
 			grid_set(dest, x, y, value);
 		}
 	}
-
-	set_boundary(b, dest, u, v);
-
 }
 
 void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
@@ -116,7 +112,6 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 				grid_set(dest, x, y, new_val);
 			}
 		}
-		set_boundary(0, dest, NULL, NULL);
 	}
 }
 
@@ -137,7 +132,6 @@ void diffuse_velocity(Grid2D *dest_u, Grid2D *src_u, Grid2D *dest_v, Grid2D *src
             }
         }
         
-        set_boundary(1, NULL, dest_u, dest_v);
     }
 }
 
@@ -153,7 +147,6 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(div, x, y, div_val);
 		}
 	}
-	set_boundary(0, div, NULL, NULL);
 
 	grid_clear(pressure);
 
@@ -165,7 +158,6 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 				grid_set(pressure, x, y, new_pressure);
 			}
 		}
-		set_boundary(0, pressure, NULL, NULL);
 	}
 
 
@@ -181,7 +173,6 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(v, x, y, new_v);
 		}
 	}
-	set_boundary(1, NULL, u, v);
 }
 
 void apply_gravity(FluidSystem *fluid, float delta_time) {
@@ -192,13 +183,44 @@ void apply_gravity(FluidSystem *fluid, float delta_time) {
 			if (grid_get(fluid->density, x, y) > 0.001f) {
 				float current_vy = grid_get(fluid->velocity_y, x, y);
 				grid_set(fluid->velocity_y, x, y, current_vy + GRAVITY * delta_time);
-				set_boundary(1, NULL, fluid->velocity_x, fluid->velocity_y);
 			} 
     	}
 	}
 
 }
 
+
+void set_boundary(FluidSystem *fluid) {
+    if (!fluid) return;
+    
+    int w = fluid->width;
+    int h = fluid->height;
+   
+    for (int x = 0; x < w; x++) {
+        grid_set(fluid->density, x, 0, grid_get(fluid->density, x, 1));
+        grid_set(fluid->density, x, h - 1, grid_get(fluid->density, x, h - 2));
+    }
+    for (int y = 0; y < h; y++) {
+        grid_set(fluid->density, 0, y, grid_get(fluid->density, 1, y));
+        grid_set(fluid->density, w - 1, y, grid_get(fluid->density, w - 2, y));
+    }
+   
+    for (int x = 0; x < w; x++) {
+        grid_set(fluid->velocity_y, x, 0, -grid_get(fluid->velocity_y, x, 1));        
+        grid_set(fluid->velocity_y, x, h - 1, -grid_get(fluid->velocity_y, x, h - 2));
+        
+        grid_set(fluid->velocity_x, x, 0, grid_get(fluid->velocity_x, x, 1));        
+        grid_set(fluid->velocity_x, x, h - 1, grid_get(fluid->velocity_x, x, h - 2));
+    }
+    
+    for (int y = 0; y < h; y++) {
+        grid_set(fluid->velocity_x, 0, y, -grid_get(fluid->velocity_x, 1, y));        
+        grid_set(fluid->velocity_x, w - 1, y, -grid_get(fluid->velocity_x, w - 2, y));
+        
+        grid_set(fluid->velocity_y, 0, y, grid_get(fluid->velocity_y, 1, y));         
+        grid_set(fluid->velocity_y, w - 1, y, grid_get(fluid->velocity_y, w - 2, y)); 
+    }
+}
 
 void fluid_update(FluidSystem *fluid) {
     if (!fluid) return;
@@ -211,22 +233,27 @@ void fluid_update(FluidSystem *fluid) {
     grid_copy(fluid->velocity_prev_y, fluid->velocity_y);
 
     diffuse_velocity(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_y, fluid->velocity_prev_y, visc, delta_time);
+	set_boundary(fluid);
 
     project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
 
     grid_copy(fluid->velocity_prev_x, fluid->velocity_x);
     grid_copy(fluid->velocity_prev_y, fluid->velocity_y);
 
-    advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time, 1);
-    advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time, 1);
+    advect(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
+    advect(fluid->velocity_y, fluid->velocity_prev_y, fluid->velocity_prev_x, fluid->velocity_prev_y, delta_time);
+	set_boundary(fluid);
 
     apply_gravity(fluid, delta_time);
+	set_boundary(fluid);
 
     project(fluid->velocity_x, fluid->velocity_y, fluid->pressure, fluid->divergence);
 
     grid_copy(fluid->density_prev, fluid->density);
     diffuse(fluid->density, fluid->density_prev, diff, delta_time);
+	set_boundary(fluid);
     
     grid_copy(fluid->density_prev, fluid->density);
-    advect(fluid->density, fluid->density_prev, fluid->velocity_x, fluid->velocity_y, delta_time, 0);
+    advect(fluid->density, fluid->density_prev, fluid->velocity_x, fluid->velocity_y, delta_time);
+	set_boundary(fluid);
 }

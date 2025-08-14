@@ -7,7 +7,6 @@
 
 #include "grid.h"
 #include "config.h"
-#include "boundary.h"
 
 /*
 	FluidSystem
@@ -88,7 +87,7 @@ void fluid_add_density(FluidSystem *fluid, int x, int y, float amount);
 	@param delta_time - how long you have to look back
 	@param b - the type of boundary to apply 
 */
-void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time, int b);
+void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time);
 
 /*
 	diffuse
@@ -129,6 +128,12 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div);
 	@param delta_time - how much delta time has passed
 */
 void apply_gravity(FluidSystem *fluid, float delta_time);
+
+/*
+	set_boundary
+	sets the boundaries on a fluid 
+*/
+void set_boundary(FluidSystem *fluid);
 
 /*
 	fluid_update
