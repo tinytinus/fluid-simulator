@@ -2,6 +2,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <sys/select.h>
 
 #include "assets/fluid.h"
 #include "assets/renderer.h" 
@@ -23,6 +24,7 @@ int main() {
     
     // Initialize ncurses
     initscr();
+	nodelay(stdscr, TRUE);
     cbreak();
     noecho();
 	keypad(stdscr, TRUE);
@@ -63,14 +65,15 @@ int main() {
 		renderer_present(render);
         
 		// TODO: Frame rate limiting
-
-		sleep(1 / 60);
+		struct timeval tv = {0, 16667};  // 16.67ms in microseconds  
+		select(0, NULL, NULL, NULL, &tv);
     }
     
     // Cleanup
 	
 	fluid_destroy(fluid);
     renderer_destroy(render);
+	input_destroy(input);
 
     endwin();
     return 0;
