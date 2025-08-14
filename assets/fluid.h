@@ -92,13 +92,25 @@ void advect(Grid2D *dest, Grid2D *src, Grid2D *u, Grid2D *v, float delta_time, i
 
 /*
 	diffuse
-	diffuses a grid using the gauss-seidel method (see wikipedia for more information)
+	diffuses a scalar grid using the gauss-seidel method
 	@param *dest - the destenation to write to 
 	@param *src - the source to start with
 	@param diff - the diffusion rate 
-	@param delta_time - the time since 
+	@param delta_time - the delta time 
 */
 void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time);
+
+/*
+	diffuse_velocity
+	diffuses a velocity grid
+	@param *dest_u - the destenation for the x velocity
+	@param *src_u - the source for the x velocity
+	@param *dest_v - the destenation for the y velocity
+	@param *src_v - the source for the y velocity
+	@param visc - the viscosity of the fluid
+	@param delta_time - the delta time 
+*/
+void diffuse_velocity(Grid2D *dest_u, Grid2D *src_u, Grid2D *dest_v, Grid2D *src_v, float visc, float delta_time);
 
 /*
 	project 

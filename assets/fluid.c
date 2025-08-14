@@ -110,9 +110,31 @@ void diffuse(Grid2D *dest, Grid2D *src, float diff, float delta_time) {
 				float new_val = (grid_get(src, x, y) + diff * delta_time * laplacian(dest, x, y)) / (1.0f + 4.0f * diff * delta_time);
 
 				grid_set(dest, x, y, new_val);
+				set_boundary(0, dest, NULL, NULL);
 			}
 		}
 	}
+}
+
+void diffuse_velocity(Grid2D *dest_u, Grid2D *src_u, Grid2D *dest_v, Grid2D *src_v, float visc, float delta_time) {
+    if (!dest_u || !src_u || !dest_v || !src_v || visc <= 0.0f) return;
+
+    grid_copy(dest_u, src_u);
+    grid_copy(dest_v, src_v);
+
+    for (int iter = 0; iter < GAUSS_SEIDEL_ITERATION; iter++) {
+        for (int y = 0; y < src_u->height; y++) {
+            for (int x = 0; x < src_u->width; x++) {
+                float new_u = (grid_get(src_u, x, y) + visc * delta_time * laplacian(dest_u, x, y)) / (1.0f + 4.0f * visc * delta_time);
+                float new_v = (grid_get(src_v, x, y) + visc * delta_time * laplacian(dest_v, x, y)) / (1.0f + 4.0f * visc * delta_time);
+                
+                grid_set(dest_u, x, y, new_u);
+                grid_set(dest_v, x, y, new_v);
+            }
+        }
+        
+        set_boundary(1, NULL, dest_u, dest_v);
+    }
 }
 
 void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
@@ -127,7 +149,7 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(div, x, y, div_val);
 		}
 	}
-	set_boundary(0, div, u, v);
+	set_boundary(0, div, NULL, NULL);
 
 	grid_clear(pressure);
 
@@ -139,7 +161,7 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 				grid_set(pressure, x, y, new_pressure);
 			}
 		}
-		set_boundary(0, pressure, u, v);
+		set_boundary(0, pressure, NULL, NULL);
 	}
 
 
@@ -155,7 +177,7 @@ void project(Grid2D *u, Grid2D *v, Grid2D *pressure, Grid2D *div) {
 			grid_set(v, x, y, new_v);
 		}
 	}
-	set_boundary(1, pressure, u, v);
+	set_boundary(1, NULL, u, v);
 }
 
 void apply_gravity(FluidSystem *fluid, float delta_time) {
@@ -178,8 +200,7 @@ void fluid_update(FluidSystem *fluid) {
     float visc = fluid->viscosity;
     float diff = fluid->diffusion;
 
-    diffuse(fluid->velocity_prev_x, fluid->velocity_x, visc, delta_time);
-    diffuse(fluid->velocity_prev_y, fluid->velocity_y, visc, delta_time);
+	diffuse_velocity(fluid->velocity_x, fluid->velocity_prev_x, fluid->velocity_y, fluid->velocity_prev_y, visc, delta_time);
 
     project(fluid->velocity_prev_x, fluid->velocity_prev_y, fluid->pressure, fluid->divergence);
 
