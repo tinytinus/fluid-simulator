@@ -189,11 +189,11 @@ void apply_gravity(FluidSystem *fluid, float delta_time) {
 
 	for (int y = 0; y < fluid->height; y++) {
     	for (int x = 0; x < fluid->width; x++) {
-			if (grid_get(fluid->density, x, y) < 0.001f) return;
-
-			float current_vy = grid_get(fluid->velocity_y, x, y);
-        	grid_set(fluid->velocity_y, x, y, current_vy + GRAVITY * delta_time);
-			set_boundary(1, NULL, fluid->velocity_x, fluid->velocity_y);
+			if (grid_get(fluid->density, x, y) > 0.001f) {
+				float current_vy = grid_get(fluid->velocity_y, x, y);
+				grid_set(fluid->velocity_y, x, y, current_vy + GRAVITY * delta_time);
+				set_boundary(1, NULL, fluid->velocity_x, fluid->velocity_y);
+			} 
     	}
 	}
 
