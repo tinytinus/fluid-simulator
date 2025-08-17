@@ -133,7 +133,7 @@ void apply_gravity(FluidSystem *fluid, float delta_time);
 	set_boundary
 	sets the boundaries on a fluid 
 */
-void set_boundary(FluidSystem *fluid);
+void set_bnd(FluidSystem *fluid);
 
 /*
 	fluid_update
