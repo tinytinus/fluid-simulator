@@ -89,3 +89,63 @@ public class Grid {
 		grid.data[x, y] = value;
 	}
 }
+
+public class FluidMath {
+	/*
+	 * lerp
+	 * linear interpolation of two values 
+	 * 	@retrun float - returns the interpolated value
+	 *	@param a - the first value to interpolate
+	 *	@param b - the second value to interpolate
+	 *	@param t - the strength to interpolate by (0.0 - 1.0)
+	 *
+	 * works by:
+	 * rcalculating the diffrence between a and b and multiplying it by the percentage t 
+	 * 	returning the calculated value
+	 */
+	public static float lerp(float a, float b, float t) {
+		float value = a + t * (b - a);
+		return value;
+	}
+
+	/*
+	 * bilerp
+	 * bilinear interpolation of a grid at the position (x, y)
+	 *	@return float - returns the interpolated value 
+	 *	@param grid - the grid to target
+	 *	@param x the x position
+	 *	@param y the y position
+	 *
+	 * works by:
+	 *	checking if the grid exists
+	 *	getting the position and value of the four corners
+	 *	getting the strength to interpolate by
+	 *	interpolating the top row
+	 *	interpolating the bottom row 
+	 *	interpolating the top and bottom togheter 
+	 *	returning the value 
+	 */
+	public static float bilerp(Grid2D grid, float x, float y) {
+		if (!grid) return 0.0f;
+
+		int left = (int)x;
+		int right = left + 1;
+		int top = (int)y;
+		int bottom = top + 1;
+
+		float sx = x - (float)left;
+		float sy = y - (float)top;
+
+		float topLeft = Grid.get(grid, left, top);
+		float topRight = Grid.get(grid, right, top);
+		float bottomLeft = Grid.get(grid, left, bottom);
+		float bottomRight = Grid.get(grid, right, bottom);
+
+		float topInterp = lerp(topLeft, topRight, sx);
+		float bottomInterp = lerp(bottomLeft, bottomRight, sx);
+
+		float value = lerp(topInterp, bottomInterp, sy);
+		return value;
+	}
+}
+
