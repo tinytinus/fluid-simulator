@@ -88,6 +88,28 @@ public class Grid {
 
 		grid.data[x, y] = value;
 	}
+
+	/*
+	 * Grid.add
+	 * adds a value to a position
+	 * 	@param grid - the grid to target
+	 * 	@param x - the x position
+	 * 	@param y - the y position
+	 * 	@param value - the value to add to the position
+	 *
+	 * works by:
+	 * 	checking if the grid exists
+	 * 	checking if the position is inside of the grid
+	 *	setting the position to the value
+	 */
+	public static void add(Grid2D grid, int x, int y, float value) {
+		if (!grid) return;
+
+		if (x > grid.width || x < 0) return;
+		if (y > grid.height || y < 0) return;
+	
+		grid.data[x, y] += value;
+	}
 }
 
 public class FluidMath {
